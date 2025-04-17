@@ -27,34 +27,47 @@ if (!$collection) {
 
 // Handle updating collection name, description, and adding pictures
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = trim($_POST['name'] ?? '');
-    $description = trim($_POST['description'] ?? '');
-    $pictureIds = $_POST['picture_ids'] ?? []; // Get picture IDs to add to collection
+    if (isset($_POST['remove_picture_id'])) {
+        // Remove picture from collection_pictures
+        $removepictureId = $_POST['remove_picture_id'];
 
-    if (empty($name)) {
-        $errors[] = "Collection name is required.";
-    }
-
-    if (empty($errors)) {
-        // Update collection data in the database
-        $stmt = $pdo->prepare("UPDATE collections SET name = :name, description = :description WHERE id = :id");
+        $stmt = $pdo->prepare("DELETE FROM collection_pictures WHERE collection_id = :collection_id AND picture_id = :picture_id");
         $stmt->execute([
-            'id' => $collectionId,
-            'name' => $name,
-            'description' => $description,
+            'collection_id' => $collectionId,
+            'picture_id' => $removepictureId
         ]);
 
-        // Add pictures to the collection
-        foreach ($pictureIds as $position => $pictureId) {
-            $stmt = $pdo->prepare("INSERT INTO collection_pictures (collection_id, picture_id, position) VALUES (:collection_id, :picture_id, :position)");
-            $stmt->execute([
-                'collection_id' => $collectionId,
-                'picture_id' => $pictureId,
-                'position' => $position + 1,
-            ]);
+        $successMessage = "picture removed from the collection.";
+    } else {
+        $name = trim($_POST['name'] ?? '');
+        $description = trim($_POST['description'] ?? '');
+        $pictureIds = $_POST['picture_ids'] ?? []; // Get picture IDs to add to collection
+
+        if (empty($name)) {
+            $errors[] = "Collection name is required.";
         }
 
-        $successMessage = "Collection updated successfully!";
+        if (empty($errors)) {
+            // Update collection data in the database
+            $stmt = $pdo->prepare("UPDATE collections SET name = :name, description = :description WHERE id = :id");
+            $stmt->execute([
+                'id' => $collectionId,
+                'name' => $name,
+                'description' => $description,
+            ]);
+
+            // Add pictures to the collection
+            foreach ($pictureIds as $position => $pictureId) {
+                $stmt = $pdo->prepare("INSERT INTO collection_pictures (collection_id, picture_id, position) VALUES (:collection_id, :picture_id, :position)");
+                $stmt->execute([
+                    'collection_id' => $collectionId,
+                    'picture_id' => $pictureId,
+                    'position' => $position + 1,
+                ]);
+            }
+
+            $successMessage = "Collection updated successfully!";
+        }
     }
 }
 
@@ -94,3 +107,21 @@ $currentpictures = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
     <button type="submit">Update Collection</button>
 </form>
+
+<h3>Current pictures in This Collection</h3>
+<ul>
+    <?php foreach ($currentpictures as $pictureId): ?>
+        <?php
+        $stmt = $pdo->prepare("SELECT * FROM pictures WHERE id = :id");
+        $stmt->execute(['id' => $pictureId]);
+        $picture = $stmt->fetch(PDO::FETCH_ASSOC);
+        ?>
+        <li>
+            <img src="uploads/<?= htmlspecialchars($picture['filename']) ?>" alt="<?= htmlspecialchars($picture['filename']) ?>" width="100">
+            <form method="POST" style="display:inline;">
+                <input type="hidden" name="remove_picture_id" value="<?= $pictureId ?>">
+                <button type="submit" onclick="return confirm('Are you sure you want to remove this picture?')">Remove</button>
+            </form>
+        </li>
+    <?php endforeach; ?>
+</ul>
