@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$username || !$password || !$secretKey) {
         $errors[] = "All fields are required.";
     } else {
-        $stmt = $pdo->prepare("SELECT id FROM users WHERE username = :username");
+        $stmt = $pdo->prepare("SELECT id FROM Users WHERE username = :username");
         $stmt->execute(['username' => $username]);
         if ($stmt->fetch()) {
             $errors[] = "Username already taken.";
@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $errors[] = "Invalid registration key.";
             } else {
                 $hash = password_hash($password, PASSWORD_DEFAULT);
-                $stmt = $pdo->prepare("INSERT INTO users (username, password_hash) VALUES (:username, :hash)");
+                $stmt = $pdo->prepare("INSERT INTO Users (username, password_hash) VALUES (:username, :hash)");
                 $stmt->execute(['username' => $username, 'hash' => $hash]);
                 header("Location: login.php");
                 exit;

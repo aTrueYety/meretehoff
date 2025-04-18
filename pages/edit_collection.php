@@ -17,8 +17,8 @@ if (!$collectionId) {
 }
 
 // Fetch existing collection data
-$stmt = $pdo->prepare("SELECT * FROM collections WHERE id = :id AND user_id = :user_id");
-$stmt->execute(['id' => $collectionId, 'user_id' => $_SESSION['user_id']]);
+$stmt = $pdo->prepare("SELECT * FROM Collections WHERE id = :id");
+$stmt->execute(['id' => $collectionId]);
 $collection = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$collection) {
@@ -38,28 +38,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   if (empty($errors)) {
     // Update collection data in the database
-    $stmt = $pdo->prepare("UPDATE collections SET name = :name, description = :description WHERE id = :id");
+    $stmt = $pdo->prepare("
+        UPDATE Collections 
+        SET name = :name, description = :description, started_at = :started_at, ended_at = :ended_at 
+        WHERE id = :id
+    ");
     $stmt->execute([
-      'id' => $collectionId,
-      'name' => $name,
-      'description' => $description,
+        'id' => $collectionId,
+        'name' => $name,
+        'description' => $description,
+        'started_at' => $_POST['started_at'],
+        'ended_at' => $_POST['ended_at'] ?? null,
     ]);
 
     // Remove selected pictures
     foreach ($removePictureIds as $removePictureId) {
-      $stmt = $pdo->prepare("DELETE FROM collection_pictures WHERE collection_id = :collection_id AND picture_id = :picture_id");
+      $stmt = $pdo->prepare("DELETE FROM CollectionPaintings WHERE collection_id = :collection_id AND painting_id = :painting_id");
       $stmt->execute([
         'collection_id' => $collectionId,
-        'picture_id' => $removePictureId
+        'painting_id' => $removePictureId
       ]);
     }
 
     // Add selected pictures
     foreach ($pictureIds as $position => $pictureId) {
-      $stmt = $pdo->prepare("INSERT INTO collection_pictures (collection_id, picture_id, position) VALUES (:collection_id, :picture_id, :position)");
+      $stmt = $pdo->prepare("INSERT INTO CollectionPaintings (collection_id, painting_id, position) VALUES (:collection_id, :painting_id, :position)");
       $stmt->execute([
         'collection_id' => $collectionId,
-        'picture_id' => $pictureId,
+        'painting_id' => $pictureId,
         'position' => $position + 1,
       ]);
     }
@@ -68,13 +74,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 }
 
-// Fetch all pictures uploaded by the user
-$stmt = $pdo->prepare("SELECT * FROM pictures WHERE user_id = :user_id");
-$stmt->execute(['user_id' => $_SESSION['user_id']]);
+// Fetch all pictures uploaded
+$stmt = $pdo->prepare("SELECT * FROM Paintings");
+$stmt->execute();
 $pictures = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Fetch current pictures in the collection
-$stmt = $pdo->prepare("SELECT picture_id FROM collection_pictures WHERE collection_id = :collection_id");
+$stmt = $pdo->prepare("SELECT painting_id FROM CollectionPaintings WHERE collection_id = :collection_id");
 $stmt->execute(['collection_id' => $collectionId]);
 $currentpictures = $stmt->fetchAll(PDO::FETCH_COLUMN);
 ?>
@@ -91,15 +97,16 @@ $currentpictures = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
 <form method="POST">
   <input name="name" value="<?= htmlspecialchars($collection['name']) ?>" placeholder="Collection Name" required><br>
-  <textarea name="description"
-    placeholder="Description"><?= htmlspecialchars($collection['description']) ?></textarea><br>
+  <textarea name="description" placeholder="Description"><?= htmlspecialchars($collection['description']) ?></textarea><br>
+  <input name="started_at" type="datetime-local" value="<?= htmlspecialchars($collection['started_at']) ?>" placeholder="Start Date"><br>
+  <input name="ended_at" type="datetime-local" value="<?= htmlspecialchars($collection['ended_at']) ?>" placeholder="End Date"><br>
 
   <h3>Choose pictures to Add or Remove</h3>
   <div style="display: flex; flex-wrap: wrap; gap: 10px;">
     <?php foreach ($pictures as $picture): ?>
       <div style="text-align: center; width: 120px;">
-        <img src="../uploads/<?= htmlspecialchars($picture['filename']) ?>"
-          alt="<?= htmlspecialchars($picture['filename']) ?>" width="100"
+        <img src="../uploads/<?= htmlspecialchars($picture['file_path']) ?>"
+          alt="<?= htmlspecialchars($picture['file_path']) ?>" width="100"
           style="<?= in_array($picture['id'], $currentpictures) ? 'opacity: 0.5;' : '' ?>">
         <br>
         <?php if (!in_array($picture['id'], $currentpictures)): ?>
@@ -117,12 +124,12 @@ $currentpictures = $stmt->fetchAll(PDO::FETCH_COLUMN);
 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
   <?php foreach ($currentpictures as $pictureId): ?>
     <?php
-    $stmt = $pdo->prepare("SELECT * FROM pictures WHERE id = :id");
+    $stmt = $pdo->prepare("SELECT * FROM Paintings WHERE id = :id");
     $stmt->execute(['id' => $pictureId]);
     $picture = $stmt->fetch(PDO::FETCH_ASSOC);
     ?>
     <div style="text-align: center; width: 120px;">
-      <img src="../uploads/<?= htmlspecialchars($picture['filename']) ?>" alt="<?= htmlspecialchars($picture['filename']) ?>" width="100">
+      <img src="../uploads/<?= htmlspecialchars($picture['file_path']) ?>" alt="<?= htmlspecialchars($picture['file_path']) ?>" width="100">
     </div>
   <?php endforeach; ?>
 </div>

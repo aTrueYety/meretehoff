@@ -39,11 +39,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Move file to the server
             if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
                 // Save image details to the database
-                $stmt = $pdo->prepare("INSERT INTO pictures (user_id, filename, title) VALUES (:user_id, :filename, :title)");
+                $stmt = $pdo->prepare("
+                    INSERT INTO Paintings (title, file_path, price, description, size_v, size_h) 
+                    VALUES (:title, :file_path, :price, :description, :size_v, :size_h)
+                ");
                 $stmt->execute([
-                    'user_id' => $_SESSION['user_id'],
-                    'filename' => $filename,
                     'title' => $_POST['title'] ?? 'Untitled', // Optional title input
+                    'file_path' => $filename,
+                    'price' => $_POST['price'],
+                    'description' => $_POST['description'] ?? null, // Optional description input
+                    'size_v' => $_POST['size_v'] ?? null, // Optional vertical size input
+                    'size_h' => $_POST['size_h'] ?? null, // Optional horizontal size input
                 ]);
 
                 $successMessage = "Image uploaded successfully!";
@@ -67,6 +73,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <form method="POST" enctype="multipart/form-data">
     <input name="title" placeholder="Image Title (Optional)" required><br>
+    <input name="price" type="number" step="0.01" placeholder="Price" required><br>
+    <textarea name="description" placeholder="Description"></textarea><br>
+    <input name="size_v" type="number" step="0.01" placeholder="Vertical Size (cm)"><br>
+    <input name="size_h" type="number" step="0.01" placeholder="Horizontal Size (cm)"><br>
     <input type="file" name="image" required><br>
     <button type="submit">Upload Image</button>
 </form>

@@ -23,11 +23,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($errors)) {
         // Insert the collection into the database
-        $stmt = $pdo->prepare("INSERT INTO collections (user_id, name, description) VALUES (:user_id, :name, :description)");
+        $stmt = $pdo->prepare("
+            INSERT INTO Collections (name, description, started_at, ended_at) 
+            VALUES (:name, :description, :started_at, :ended_at)
+        ");
         $stmt->execute([
-            'user_id' => $_SESSION['user_id'],
             'name' => $name,
             'description' => $description,
+            'started_at' => $_POST['started_at'] ?? null,
+            'ended_at' => $_POST['ended_at'] ?? null,
         ]);
 
         // Get the collection ID
@@ -35,11 +39,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Insert pictures into the collection
         foreach ($pictureIds as $position => $pictureId) {
-            $stmt = $pdo->prepare("INSERT INTO collection_pictures (collection_id, picture_id, position) VALUES (:collection_id, :picture_id, :position)");
+            $stmt = $pdo->prepare("INSERT INTO CollectionPaintings (collection_id, painting_id) VALUES (:collection_id, :painting_id)");
             $stmt->execute([
                 'collection_id' => $collectionId,
-                'picture_id' => $pictureId,
-                'position' => $position + 1,  // Position pictures in order
+                'painting_id' => $pictureId,
             ]);
         }
 
@@ -48,8 +51,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Fetch all pictures uploaded by the user
-$stmt = $pdo->prepare("SELECT * FROM pictures WHERE user_id = :user_id");
-$stmt->execute(['user_id' => $_SESSION['user_id']]);
+$stmt = $pdo->prepare("SELECT * FROM Paintings");
+$stmt->execute();
 $pictures = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
@@ -66,11 +69,13 @@ $pictures = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <form method="POST">
     <input name="name" placeholder="Collection Name" required><br>
     <textarea name="description" placeholder="Description"></textarea><br>
+    <input name="started_at" type="datetime-local" placeholder="Start Date"><br>
+    <input name="ended_at" type="datetime-local" placeholder="End Date"><br>
 
     <h3>Choose pictures to Add</h3>
     <select name="picture_ids[]" multiple>
         <?php foreach ($pictures as $picture): ?>
-            <option value="<?= $picture['id'] ?>"><?= htmlspecialchars($picture['filename']) ?></option>
+            <option value="<?= $picture['id'] ?>"><?= htmlspecialchars($picture['file_path']) ?></option>
         <?php endforeach; ?>
     </select><br>
 

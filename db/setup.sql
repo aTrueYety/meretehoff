@@ -1,38 +1,35 @@
--- USERS
-CREATE TABLE users (
+CREATE TABLE Users (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL UNIQUE,
+    username VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- PICTURES
-CREATE TABLE pictures (
+CREATE TABLE Paintings (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    filename VARCHAR(255) NOT NULL,
-    title VARCHAR(255),
+    title VARCHAR(255) NOT NULL,
+    file_path VARCHAR(255) NOT NULL,
+    price DECIMAL(10, 2),
     description TEXT,
-    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    size_v FLOAT,
+    size_h FLOAT,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- COLLECTIONS
-CREATE TABLE collections (
+CREATE TABLE Collections (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    position INT,
+    started_at DATETIME NOT NULL,
+    ended_at DATETIME
 );
 
--- COLLECTION_PICTURES (junction table with order)
-CREATE TABLE collection_pictures (
+CREATE TABLE CollectionPaintings (
+    painting_id INT NOT NULL,
     collection_id INT NOT NULL,
-    picture_id INT NOT NULL,
-    position INT NOT NULL,
-    PRIMARY KEY (collection_id, picture_id),
-    FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE,
-    FOREIGN KEY (picture_id) REFERENCES pictures(id) ON DELETE CASCADE
+    position INT,
+    PRIMARY KEY (painting_id, collection_id),
+    FOREIGN KEY (painting_id) REFERENCES Paintings(id) ON DELETE CASCADE,
+    FOREIGN KEY (collection_id) REFERENCES Collections(id) ON DELETE CASCADE
 );
