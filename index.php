@@ -55,7 +55,11 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
 <head>
   <meta charset="UTF-8">
-  <title>My Collections</title>
+  <title>Merete Hoff</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
   <link rel="stylesheet" href="css/index.css">
 </head>
@@ -69,12 +73,15 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
   </div>
 
   <div id="navbar" class="navbar">
-    <div>
-      <a href="index.php#about-anchor">OM</a>
-      <a href="index.php#collections-anchor">KUNST</a>
+    <span class="menu">
+      <a href="/index.php#about-anchor">OM</a>
+      <a href="/index.php#collections-anchor">KUNST</a>
       <a>UTSTILLINGER</a>
       <a>KONTAKT</a>
-    </div>
+    </span>
+    <span class="logo">
+      <h2 onclick="window.location.href='/index.php#'">Merete Hoff</h2>
+    </span>
   </div>
 
   <div class="body">
@@ -107,28 +114,30 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
       </div>
     </div>
 
-    <div class="collections">
-      <div id="collections-anchor"></div>
-      <h1>Kunst</h1>
-      <div class="wrapper">
+    <?php if (!empty($collections)): ?>
+      <div class="collections">
+        <div id="collections-anchor"></div>
+        <h1>Kunst</h1>
+        <div class="wrapper">
         <?php foreach ($collections as $collection): ?>
           <div class="collection">
-            <div class="title"><?= $collection['name'] ?></div>
-            <p class="description"><?= $collection['description'] ?></p>
-            <div class="gallery">
-              <?php foreach ($collection['paintings'] as $painting): ?>
-                <div class="picture" onclick="viewPainting(<?= $painting['id'] ?>)">
-                  <img src="uploads/<?= $painting['filename'] ?>" alt="<?= $painting['title'] ?>">
-                  <div class="overlay">
-                    <p class="title"><?= $painting['title'] ?></p>
-                  </div>
-                </div>
-              <?php endforeach; ?>
+          <div class="title"><?= $collection['name'] ?></div>
+          <p class="description"><?= $collection['description'] ?></p>
+          <div class="gallery">
+            <?php foreach ($collection['paintings'] as $painting): ?>
+            <div class="picture" onclick="window.location.href = 'pages/painting.php?id=<?= $painting['id'] ?>'">
+              <img src="uploads/<?= $painting['filename'] ?>" alt="<?= $painting['title'] ?>">
+              <div class="overlay">
+              <p class="title"><?= $painting['title'] ?></p>
+              </div>
             </div>
+            <?php endforeach; ?>
+          </div>
           </div>
         <?php endforeach; ?>
+        </div>
       </div>
-    </div>
+    <?php endif; ?>
 
     <div class="contact">
       <h2>Kontakt</h2>
@@ -162,10 +171,6 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
   <?php endif; ?>
 
   <script>
-    function viewPainting(paintingId) {
-      window.location.href = 'pages/painting.php?id=' + paintingId;
-    }
-
     const navbar = document.getElementById('navbar');
     var sticky = navbar.offsetTop;
 
