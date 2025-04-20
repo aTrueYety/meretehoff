@@ -1,7 +1,7 @@
 CREATE TABLE user (
     id CHAR(36) PRIMARY KEY,
     username VARCHAR(255) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE image (
@@ -33,7 +33,7 @@ CREATE TABLE collection (
 CREATE TABLE exhibition (
     id CHAR(36) PRIMARY KEY,
     location VARCHAR(255),
-    description TEXT
+    description TEXT,
     position INT,
     started_at DATE,
     finished_at DATE
