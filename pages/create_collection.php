@@ -22,27 +22,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
+        // Generate a UUID for the collection
+        $collectionId = bin2hex(random_bytes(16)); // Generate a 36-character UUID
+
         // Insert the collection into the database
         $stmt = $pdo->prepare("
-            INSERT INTO Collections (name, description, started_at, ended_at) 
-            VALUES (:name, :description, :started_at, :ended_at)
+            INSERT INTO collection (id, name, description, started_at, finished_at) 
+            VALUES (:id, :name, :description, :started_at, :finished_at)
         ");
         $stmt->execute([
+            'id' => $collectionId,
             'name' => $name,
             'description' => $description,
             'started_at' => $_POST['started_at'] ?? null,
-            'ended_at' => $_POST['ended_at'] ?? null,
+            'finished_at' => $_POST['ended_at'] ?? null,
         ]);
 
-        // Get the collection ID
-        $collectionId = $pdo->lastInsertId();
-
-        // Insert pictures into the collection
+        // Insert paintings into the collection
         foreach ($pictureIds as $position => $pictureId) {
-            $stmt = $pdo->prepare("INSERT INTO CollectionPaintings (collection_id, painting_id) VALUES (:collection_id, :painting_id)");
+            $stmt = $pdo->prepare("
+                INSERT INTO collection_painting (painting_id, collection_id, position) 
+                VALUES (:painting_id, :collection_id, :position)
+            ");
             $stmt->execute([
-                'collection_id' => $collectionId,
                 'painting_id' => $pictureId,
+                'collection_id' => $collectionId,
+                'position' => $position + 1,
             ]);
         }
 
@@ -50,8 +55,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Fetch all pictures uploaded by the user
-$stmt = $pdo->prepare("SELECT * FROM Paintings");
+// Fetch all paintings with their first image
+$stmt = $pdo->prepare("
+    SELECT 
+        p.id AS painting_id,
+        p.title AS painting_title,
+        i.file_path AS image_path
+    FROM painting p
+    LEFT JOIN painting_image pi ON p.id = pi.painting_id AND pi.position = 1
+    LEFT JOIN image i ON pi.image_id = i.id
+");
 $stmt->execute();
 $pictures = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -72,12 +85,22 @@ $pictures = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <input name="started_at" type="datetime-local" placeholder="Start Date"><br>
     <input name="ended_at" type="datetime-local" placeholder="End Date"><br>
 
-    <h3>Choose pictures to Add</h3>
-    <select name="picture_ids[]" multiple>
+    <h3>Choose paintings to Add</h3>
+    <div class="painting-preview">
         <?php foreach ($pictures as $picture): ?>
-            <option value="<?= $picture['id'] ?>"><?= htmlspecialchars($picture['file_path']) ?></option>
+            <label style="display: inline-block; margin: 10px; text-align: center;">
+                <input type="checkbox" name="picture_ids[]" value="<?= $picture['painting_id'] ?>">
+                <?php if (!empty($picture['image_path'])): ?>
+                    <img src="../uploads/<?= htmlspecialchars($picture['image_path']) ?>" alt="Preview" style="width:100px;height:auto;display:block;">
+                <?php else: ?>
+                    <div style="width:100px;height:100px;background-color:#ccc;display:flex;align-items:center;justify-content:center;">
+                        No Image
+                    </div>
+                <?php endif; ?>
+                <span><?= htmlspecialchars($picture['painting_title'] ?? 'Untitled') ?></span>
+            </label>
         <?php endforeach; ?>
-    </select><br>
+    </div>
 
     <button type="submit">Create Collection</button>
 </form>

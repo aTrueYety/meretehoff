@@ -1,4 +1,6 @@
-html, body {
+html,
+body {
+  scroll-behavior: smooth;
   height: 100%;
   margin: 0;
   padding: 0;
@@ -6,31 +8,99 @@ html, body {
 
 body {
   background-color: #ff0000;
-  font-family: 'Lato', sans-serif;
+  font-family: "Lato", sans-serif;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   margin: 0;
+}
+
+h1 {
+  font-weight: normal;
+  font-size: 3rem;
+  letter-spacing: 1rem;
 }
 
 p {
-  margin: 0;
+  margin: 1rem 0;
   padding: 0;
+  font-size: 1.2rem;
+  line-height: 1.5rem;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
 }
 
 .header {
   width: 100%;
-  max-height: 100vh;
-  aspect-ratio: 16/9;
+  height: 100vh;
 
-  /* The image used */
   background-image: url("../img/banner.jpeg");
-
-  /* Create the parallax scrolling effect */
   background-attachment: fixed;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  & div {
+    padding: 1rem;
+    background-color: rgb(79, 79, 79);
+    color: white;
+
+    & p {
+      margin: 0;
+      letter-spacing: 0.5rem;
+      text-align: center;
+      text-transform: uppercase;
+    }
+  }
+}
+
+.navbar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #f0f0f0;
+  z-index: 1000;
+
+  & div {
+    display: flex;
+    justify-content: flex-start;
+    gap: 2rem;
+    padding: 0 2rem;
+
+    & a {
+      padding: 1rem;
+      transition: 0.2s;
+      cursor: pointer;
+      text-transform: uppercase;
+
+      &:hover {
+        background-color: #e0e0e0;
+      }
+    }
+  }
+}
+
+.sticky {
+  position: fixed;
+  top: 0;
+  bottom: auto;
+}
+
+#collections-anchor {
+  transform: translateY(-5rem);
 }
 
 .body {
@@ -38,72 +108,145 @@ p {
   flex-direction: column;
   align-items: center;
   gap: 5rem;
-  padding: 5rem 0;
+  padding: 3rem 0;
   background-color: #f0f0f0;
+  max-width: 100%;
 }
 
 .about {
-  padding: 0 3rem;
-  max-width: 1000px;
-}
-
-.collections {
   width: 100%;
-}
-
-.collection {}
-
-.gallery {
-  overflow-x: scroll;
-  overflow-y: hidden;
-  height: 70vh;
-  white-space: nowrap; /* Prevent wrapping */
-}
-
-.picture {
-  display: inline-block;
-  height: 100%;
-  width: auto;
-  /* outline: 1px solid #ff0000; */
-  overflow: hidden;
-}
-
-.picture img {
-  height: 100%; /* Ensure full height is visible */
-  object-fit: contain; /* Show the entire image */
-}
-
-.picture .overlay {
-  position: relative;
-  background: #000000;
-  background: linear-gradient(0deg, rgb(0% 0% 0% / 0.8) 0%, rgb(0% 0% 0% / 0.79998779296875) 6.25%, rgb(0% 0% 0% / 0.7998046875) 12.5%, rgb(0% 0% 0% / 0.79901123046875) 18.75%, rgb(0% 0% 0% / 0.796875) 25%, rgb(0% 0% 0% / 0.79237060546875) 31.25%, rgb(0% 0% 0% / 0.7841796875) 37.5%, rgb(0% 0% 0% / 0.77069091796875) 43.75%, rgb(0% 0% 0% / 0.75) 50%, rgb(0% 0% 0% / 0.71990966796875) 56.25%, rgb(0% 0% 0% / 0.6779296875) 62.5%, rgb(0% 0% 0% / 0.62127685546875) 68.75%, rgb(0% 0% 0% / 0.546875) 75%, rgb(0% 0% 0% / 0.45135498046875) 81.25%, rgb(0% 0% 0% / 0.3310546875) 87.5%, rgb(0% 0% 0% / 0.18201904296875004) 93.75%, rgb(0% 0% 0% / 0) 100% );
-  height: 4rem;
-  top: 0;
-  transition: 0.5s ease-out;
-  color: #f0f0f0;
-  padding-top: 1rem;
-}
-
-.picture:hover .overlay {
-  top: -4rem;
-}
-
-.picture .title {
-  font-size: 1.5rem;
-}
-
-.picture .price {}
-
-.contact {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #fff;
+
+  & div {
+    padding: 2rem;
+    max-width: 800px;
+
+    & h1 {
+      font-size: 2rem;
+      letter-spacing: 0.5rem;
+      text-transform: uppercase;
+    }
+  }
+}
+
+.collections {
+  margin: 5rem 0;
+  background-color: rgb(79, 79, 79);
+  color: white;
+  padding: 2rem;
+
+  & h1 {
+    margin-bottom: 4rem;
+  }
+
+  & .wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 5rem;
+  }
+}
+
+.collection {
+
+  & .title {
+    font-size: 2rem;
+    letter-spacing: 0.5rem;
+    text-transform: uppercase;
+  }
+}
+
+.gallery {
+  display: flex;
+  overflow-x: auto;
+  gap: 1rem;
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  /* For Firefox */
+  scrollbar-color: #888 transparent;
+  /* For Firefox */
+}
+
+.gallery::-webkit-scrollbar {
+  height: 8px;
+  /* Custom scrollbar height */
+}
+
+.gallery::-webkit-scrollbar-thumb {
+  background-color: #888;
+  /* Scrollbar thumb color */
+  border-radius: 4px;
+  /* Rounded corners */
+}
+
+.gallery::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+  /* Darker color on hover */
+}
+
+.gallery::-webkit-scrollbar-track {
+  background: transparent;
+  /* Transparent track */
+}
+
+.picture {
+  flex: 0 0 auto;
+  display: inline-block;
+  overflow: hidden;
+  max-width: 100%;
+  height: 70vh;
+  transition: 0.75s ease-in-out;
+  cursor: pointer;
+
+  & img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: 0.25s ease-out;
+  }
+
+  & .overlay {
+    position: relative;
+    background: #000000;
+    background: linear-gradient(0deg, rgb(0% 0% 0% / 0.6) 0%, rgb(0% 0% 0% / 0) 100%);
+    height: 100%;
+    top: 0;
+    color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    transition: 0.25s ease-out;
+  }
+
+  & .title {
+    margin: 0;
+    padding: 1rem;
+    font-size: 1.5rem;
+  }
+
+  &:hover {
+    & .overlay {
+      top: -100%;
+    }
+
+    & img {
+      transform: scale(1.1);    }
+  }
+}
+
+.contact {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 2rem;
 }
 
 .profile-pic {
-  width: 20vw;
+  width: 100%;
   aspect-ratio: 1;
   border-radius: 50%;
   margin: 2rem auto;
@@ -111,14 +254,14 @@ p {
 }
 
 .contact-details {
-  width: 30vw;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
 }
 
-.contact-details > div {
+.contact-details>div {
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -131,8 +274,6 @@ p {
   z-index: 1000;
   left: 0;
   top: 0;
-  width: 100%;
-  height: 100%;
   overflow: auto;
 }
 
@@ -147,19 +288,21 @@ p {
 }
 
 .modal-content {
-  position: relative;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 2;
   padding: 20px;
   margin: 5vw auto;
-  width: 90vw;
   background-color: white;
-  border-radius: 8px;
+  width: 100%;
 }
 
 .modal-content img {
-  max-width: 100%;
-  height: auto;
-  margin-bottom: 15px;
+  width: 100%;
+  max-width: 90vw;
+  max-height: 100vh;
+  object-fit: contain;
 }
 
 .modal-content .close {

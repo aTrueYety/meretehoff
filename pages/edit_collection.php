@@ -17,7 +17,7 @@ if (!$collectionId) {
 }
 
 // Fetch existing collection data
-$stmt = $pdo->prepare("SELECT * FROM Collections WHERE id = :id");
+$stmt = $pdo->prepare("SELECT * FROM collection WHERE id = :id");
 $stmt->execute(['id' => $collectionId]);
 $collection = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -25,12 +25,12 @@ if (!$collection) {
   die("Collection not found.");
 }
 
-// Handle updating collection name, description, and adding/removing pictures
+// Handle updating collection name, description, and adding/removing paintings
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $name = trim($_POST['name'] ?? '');
   $description = trim($_POST['description'] ?? '');
-  $removePictureIds = $_POST['remove_picture_ids'] ?? [];
-  $pictureIds = $_POST['picture_ids'] ?? [];
+  $removePaintingIds = $_POST['remove_picture_ids'] ?? [];
+  $paintingIds = $_POST['picture_ids'] ?? [];
 
   if (empty($name)) {
     $errors[] = "Collection name is required.";
@@ -39,8 +39,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (empty($errors)) {
     // Update collection data in the database
     $stmt = $pdo->prepare("
-        UPDATE Collections 
-        SET name = :name, description = :description, started_at = :started_at, ended_at = :ended_at 
+        UPDATE collection 
+        SET name = :name, description = :description, started_at = :started_at, finished_at = :finished_at 
         WHERE id = :id
     ");
     $stmt->execute([
@@ -48,25 +48,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'name' => $name,
         'description' => $description,
         'started_at' => $_POST['started_at'],
-        'ended_at' => $_POST['ended_at'] ?? null,
+        'finished_at' => $_POST['ended_at'] ?? null,
     ]);
 
-    // Remove selected pictures
-    foreach ($removePictureIds as $removePictureId) {
-      $stmt = $pdo->prepare("DELETE FROM CollectionPaintings WHERE collection_id = :collection_id AND painting_id = :painting_id");
+    // Remove selected paintings
+    foreach ($removePaintingIds as $removePaintingId) {
+      $stmt = $pdo->prepare("DELETE FROM collection_painting WHERE collection_id = :collection_id AND painting_id = :painting_id");
       $stmt->execute([
         'collection_id' => $collectionId,
-        'painting_id' => $removePictureId
+        'painting_id' => $removePaintingId
       ]);
     }
 
-    // Add selected pictures
-    foreach ($pictureIds as $position => $pictureId) {
-      $stmt = $pdo->prepare("INSERT INTO CollectionPaintings (collection_id, painting_id, position) VALUES (:collection_id, :painting_id, :position)");
+    // Add selected paintings
+    foreach ($paintingIds as $position => $paintingId) {
+      $stmt = $pdo->prepare("
+          INSERT INTO collection_painting (painting_id, collection_id, position) 
+          VALUES (:painting_id, :collection_id, :position)
+      ");
       $stmt->execute([
-        'collection_id' => $collectionId,
-        'painting_id' => $pictureId,
-        'position' => $position + 1,
+          'painting_id' => $paintingId,
+          'collection_id' => $collectionId,
+          'position' => $position + 1,
       ]);
     }
 
@@ -74,15 +77,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 }
 
-// Fetch all pictures uploaded
-$stmt = $pdo->prepare("SELECT * FROM Paintings");
+// Fetch all paintings with their first image
+$stmt = $pdo->prepare("
+    SELECT 
+        p.id AS painting_id,
+        p.title AS painting_title,
+        i.file_path AS image_path
+    FROM painting p
+    LEFT JOIN painting_image pi ON p.id = pi.painting_id AND pi.position = 1
+    LEFT JOIN image i ON pi.image_id = i.id
+");
 $stmt->execute();
-$pictures = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$paintings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Fetch current pictures in the collection
-$stmt = $pdo->prepare("SELECT painting_id FROM CollectionPaintings WHERE collection_id = :collection_id");
+// Fetch current paintings in the collection
+$stmt = $pdo->prepare("
+    SELECT 
+        p.id AS painting_id,
+        i.file_path AS image_path
+    FROM collection_painting cp
+    JOIN painting p ON cp.painting_id = p.id
+    LEFT JOIN painting_image pi ON p.id = pi.painting_id AND pi.position = 1
+    LEFT JOIN image i ON pi.image_id = i.id
+    WHERE cp.collection_id = :collection_id
+");
 $stmt->execute(['collection_id' => $collectionId]);
-$currentpictures = $stmt->fetchAll(PDO::FETCH_COLUMN);
+$currentPaintings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <h1>Edit Collection</h1>
@@ -99,20 +119,20 @@ $currentpictures = $stmt->fetchAll(PDO::FETCH_COLUMN);
   <input name="name" value="<?= htmlspecialchars($collection['name']) ?>" placeholder="Collection Name" required><br>
   <textarea name="description" placeholder="Description"><?= htmlspecialchars($collection['description']) ?></textarea><br>
   <input name="started_at" type="datetime-local" value="<?= htmlspecialchars($collection['started_at']) ?>" placeholder="Start Date"><br>
-  <input name="ended_at" type="datetime-local" value="<?= htmlspecialchars($collection['ended_at']) ?>" placeholder="End Date"><br>
+  <input name="ended_at" type="datetime-local" value="<?= htmlspecialchars($collection['finished_at']) ?>" placeholder="End Date"><br>
 
-  <h3>Choose pictures to Add or Remove</h3>
+  <h3>Choose paintings to Add or Remove</h3>
   <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-    <?php foreach ($pictures as $picture): ?>
+    <?php foreach ($paintings as $painting): ?>
       <div style="text-align: center; width: 120px;">
-        <img src="../uploads/<?= htmlspecialchars($picture['file_path']) ?>"
-          alt="<?= htmlspecialchars($picture['file_path']) ?>" width="100"
-          style="<?= in_array($picture['id'], $currentpictures) ? 'opacity: 0.5;' : '' ?>">
+        <img src="../uploads/<?= htmlspecialchars($painting['image_path']) ?>"
+          alt="<?= htmlspecialchars($painting['painting_title']) ?>" width="100"
+          style="<?= in_array($painting['painting_id'], array_column($currentPaintings, 'painting_id')) ? 'opacity: 0.5;' : '' ?>">
         <br>
-        <?php if (!in_array($picture['id'], $currentpictures)): ?>
-          <input type="checkbox" name="picture_ids[]" value="<?= $picture['id'] ?>"> Add
+        <?php if (!in_array($painting['painting_id'], array_column($currentPaintings, 'painting_id'))): ?>
+          <input type="checkbox" name="picture_ids[]" value="<?= $painting['painting_id'] ?>"> Add
         <?php else: ?>
-          <input type="checkbox" name="remove_picture_ids[]" value="<?= $picture['id'] ?>"> Remove
+          <input type="checkbox" name="remove_picture_ids[]" value="<?= $painting['painting_id'] ?>"> Remove
         <?php endif; ?>
       </div>
     <?php endforeach; ?>
@@ -120,16 +140,11 @@ $currentpictures = $stmt->fetchAll(PDO::FETCH_COLUMN);
   <button type="submit">Update Collection</button>
 </form>
 
-<h3>Current pictures in This Collection</h3>
+<h3>Current paintings in This Collection</h3>
 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-  <?php foreach ($currentpictures as $pictureId): ?>
-    <?php
-    $stmt = $pdo->prepare("SELECT * FROM Paintings WHERE id = :id");
-    $stmt->execute(['id' => $pictureId]);
-    $picture = $stmt->fetch(PDO::FETCH_ASSOC);
-    ?>
+  <?php foreach ($currentPaintings as $painting): ?>
     <div style="text-align: center; width: 120px;">
-      <img src="../uploads/<?= htmlspecialchars($picture['file_path']) ?>" alt="<?= htmlspecialchars($picture['file_path']) ?>" width="100">
+      <img src="../uploads/<?= htmlspecialchars($painting['image_path']) ?>" alt="Painting" width="100">
     </div>
   <?php endforeach; ?>
 </div>
