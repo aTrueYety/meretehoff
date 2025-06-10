@@ -105,6 +105,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Opprett nytt maleri</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="/css/form.css">
+</head>
+<body>
 <h1>Opprett nytt maleri</h1>
 
 <?php if ($successMessage): ?>
@@ -121,7 +134,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <textarea name="description" placeholder="Description"></textarea><br>
     <input name="size_v" type="number" step="0.01" placeholder="Vertical Size (cm)"><br>
     <input name="size_h" type="number" step="0.01" placeholder="Horizontal Size (cm)"><br>
-    <input name="finished_at" type="date" placeholder="Finished Date" required><br>
+    <label for="finished_at">Dato:</label>
+    <input id="finished_at" name="finished_at" type="date" placeholder="Finished Date" required><br>
     
     <div id="fileInputs">
         <input type="file" name="images[]" required><br>
@@ -140,3 +154,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         fileInputs.appendChild(document.createElement('br'));
     }
 </script>
+</body>
+</html>

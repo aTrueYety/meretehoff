@@ -25,11 +25,10 @@ if (!$collection) {
   die("Collection not found.");
 }
 
-// Handle updating collection name, description, and adding/removing paintings
+// Handle updating collection name, description, and paintings
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $name = trim($_POST['name'] ?? '');
   $description = trim($_POST['description'] ?? '');
-  $removePaintingIds = $_POST['remove_picture_ids'] ?? [];
   $paintingIds = $_POST['picture_ids'] ?? [];
 
   if (empty($name)) {
@@ -51,41 +50,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'finished_at' => $_POST['ended_at'] ?? null,
     ]);
 
-    // Remove selected paintings
-    foreach ($removePaintingIds as $removePaintingId) {
-      $stmt = $pdo->prepare("DELETE FROM collection_painting WHERE collection_id = :collection_id AND painting_id = :painting_id");
-      $stmt->execute([
-        'collection_id' => $collectionId,
-        'painting_id' => $removePaintingId
-      ]);
-    }
+    // Remove all paintings from the collection
+    $stmt = $pdo->prepare("DELETE FROM collection_painting WHERE collection_id = :collection_id");
+    $stmt->execute(['collection_id' => $collectionId]);
 
-    // Add selected paintings
-    foreach ($paintingIds as $position => $paintingId) {
-      $stmt = $pdo->prepare("
-          INSERT INTO collection_painting (painting_id, collection_id, position) 
-          VALUES (:painting_id, :collection_id, :position)
-      ");
-      $stmt->execute([
-          'painting_id' => $paintingId,
-          'collection_id' => $collectionId,
-          'position' => $position + 1,
-      ]);
+    // Add selected paintings back in order
+    // Fix: Only add paintings that actually exist (avoid empty values)
+    $paintingIds = array_unique($paintingIds); // Remove duplicates
+    $position = 1;
+    foreach ($paintingIds as $paintingId) {
+        if (!$paintingId) continue;
+        $stmt = $pdo->prepare("
+            INSERT INTO collection_painting (painting_id, collection_id, position) 
+            VALUES (:painting_id, :collection_id, :position)
+        ");
+        $stmt->execute([
+            'painting_id' => $paintingId,
+            'collection_id' => $collectionId,
+            'position' => $position++,
+        ]);
     }
 
     $successMessage = "Collection updated successfully!";
   }
 }
 
-// Fetch all paintings with their first image
+// Fetch all paintings with their first image (fetch all thumbnails, order by position, pick the first)
 $stmt = $pdo->prepare("
     SELECT 
         p.id AS painting_id,
         p.title AS painting_title,
-        i.file_path AS image_path
+        (
+            SELECT i.file_path
+            FROM painting_image pi2
+            LEFT JOIN image i ON pi2.image_id = i.id
+            WHERE pi2.painting_id = p.id
+            ORDER BY pi2.position ASC
+            LIMIT 1
+        ) AS image_path
     FROM painting p
-    LEFT JOIN painting_image pi ON p.id = pi.painting_id AND pi.position = 1
-    LEFT JOIN image i ON pi.image_id = i.id
 ");
 $stmt->execute();
 $paintings = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -94,17 +97,34 @@ $paintings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $stmt = $pdo->prepare("
     SELECT 
         p.id AS painting_id,
-        i.file_path AS image_path
+        (
+            SELECT i.file_path
+            FROM painting_image pi2
+            LEFT JOIN image i ON pi2.image_id = i.id
+            WHERE pi2.painting_id = p.id
+            ORDER BY pi2.position ASC
+            LIMIT 1
+        ) AS image_path
     FROM collection_painting cp
     JOIN painting p ON cp.painting_id = p.id
-    LEFT JOIN painting_image pi ON p.id = pi.painting_id AND pi.position = 1
-    LEFT JOIN image i ON pi.image_id = i.id
     WHERE cp.collection_id = :collection_id
 ");
 $stmt->execute(['collection_id' => $collectionId]);
 $currentPaintings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Collection</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="/css/form.css">
+</head>
+<body>
 <h1>Edit Collection</h1>
 
 <?php if ($successMessage): ?>
@@ -118,33 +138,74 @@ $currentPaintings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <form method="POST">
   <input name="name" value="<?= htmlspecialchars($collection['name']) ?>" placeholder="Collection Name" required><br>
   <textarea name="description" placeholder="Description"><?= htmlspecialchars($collection['description']) ?></textarea><br>
-  <input name="started_at" type="datetime-local" value="<?= htmlspecialchars($collection['started_at']) ?>" placeholder="Start Date"><br>
-  <input name="ended_at" type="datetime-local" value="<?= htmlspecialchars($collection['finished_at']) ?>" placeholder="End Date"><br>
+  <input name="started_at" type="date" value="<?= htmlspecialchars($collection['started_at']) ?>" placeholder="Start Date"><br>
+  <input name="ended_at" type="date" value="<?= htmlspecialchars($collection['finished_at']) ?>" placeholder="End Date"><br>
 
   <h3>Choose paintings to Add or Remove</h3>
-  <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-    <?php foreach ($paintings as $painting): ?>
-      <div style="text-align: center; width: 120px;">
+  <div id="paintingPreview" style="display: flex; flex-wrap: wrap; gap: 10px;">
+    <?php
+      $currentPaintingIds = array_column($currentPaintings, 'painting_id');
+      foreach ($paintings as $painting):
+        $isSelected = in_array($painting['painting_id'], $currentPaintingIds);
+    ?>
+      <div class="painting-thumb<?= $isSelected ? ' highlight' : '' ?>"
+           data-painting-id="<?= htmlspecialchars($painting['painting_id']) ?>"
+           style="text-align: center; width: 120px; cursor: pointer;">
         <img src="../uploads/<?= htmlspecialchars($painting['image_path']) ?>"
-          alt="<?= htmlspecialchars($painting['painting_title']) ?>" width="100"
-          style="<?= in_array($painting['painting_id'], array_column($currentPaintings, 'painting_id')) ? 'opacity: 0.5;' : '' ?>">
+          alt="<?= htmlspecialchars($painting['painting_title']) ?>" width="100">
         <br>
-        <?php if (!in_array($painting['painting_id'], array_column($currentPaintings, 'painting_id'))): ?>
-          <input type="checkbox" name="picture_ids[]" value="<?= $painting['painting_id'] ?>"> Add
-        <?php else: ?>
-          <input type="checkbox" name="remove_picture_ids[]" value="<?= $painting['painting_id'] ?>"> Remove
-        <?php endif; ?>
+        <span><?= htmlspecialchars($painting['painting_title']) ?></span>
       </div>
+    <?php endforeach; ?>
+  </div>
+  <div id="selectedPaintings">
+    <?php foreach ($currentPaintingIds as $pid): ?>
+      <input type="hidden" name="picture_ids[]" value="<?= htmlspecialchars($pid) ?>">
     <?php endforeach; ?>
   </div>
   <button type="submit">Update Collection</button>
 </form>
 
-<h3>Current paintings in This Collection</h3>
-<div style="display: flex; flex-wrap: wrap; gap: 10px;">
-  <?php foreach ($currentPaintings as $painting): ?>
-    <div style="text-align: center; width: 120px;">
-      <img src="../uploads/<?= htmlspecialchars($painting['image_path']) ?>" alt="Painting" width="100">
-    </div>
-  <?php endforeach; ?>
-</div>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const preview = document.getElementById('paintingPreview');
+    const selectedPaintings = document.getElementById('selectedPaintings');
+    // Use a Set to track selected ids
+    const selected = new Set();
+    // Initialize with current selected
+    selectedPaintings.querySelectorAll('input[name="picture_ids[]"]').forEach(function(input) {
+      selected.add(input.value);
+    });
+
+    preview.querySelectorAll('.painting-thumb').forEach(function (thumb) {
+      thumb.addEventListener('click', function () {
+        const id = thumb.getAttribute('data-painting-id');
+        if (selected.has(id)) {
+          selected.delete(id);
+          thumb.classList.remove('highlight');
+          // Remove hidden input
+          const input = selectedPaintings.querySelector('input[value="' + id + '"]');
+          if (input) input.remove();
+        } else {
+          selected.add(id);
+          thumb.classList.add('highlight');
+          // Add hidden input
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = 'picture_ids[]';
+          input.value = id;
+          selectedPaintings.appendChild(input);
+        }
+      });
+    });
+  });
+</script>
+<style>
+  .painting-thumb.highlight {
+    outline: 3px solid #007bff;
+    background: #e6f0ff;
+    border-radius: 6px;
+  }
+</style>
+</body>
+</html>

@@ -8,20 +8,27 @@ $stmt = $pdo->query("
         c.id AS collection_id,
         c.name AS collection_name,
         c.description AS collection_description,
+        c.started_at,
+        c.finished_at,
         p.id AS painting_id,
         p.title AS painting_title,
         p.price,
         p.description AS painting_description,
         p.size_v,
         p.size_h,
-        p.finished_at,
+        p.finished_at AS painting_finished_at,
         cp.position,
-        i.file_path AS filename
+        (
+            SELECT i.file_path
+            FROM painting_image pi2
+            LEFT JOIN image i ON pi2.image_id = i.id
+            WHERE pi2.painting_id = p.id
+            ORDER BY pi2.position ASC
+            LIMIT 1
+        ) AS filename
     FROM collection c
     LEFT JOIN collection_painting cp ON c.id = cp.collection_id
     LEFT JOIN painting p ON cp.painting_id = p.id
-    LEFT JOIN painting_image pi ON p.id = pi.painting_id AND pi.position = 1
-    LEFT JOIN image i ON pi.image_id = i.id
     ORDER BY c.id, cp.position ASC
 ");
 
@@ -32,6 +39,8 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $collections[$cid] = [
       'name' => htmlspecialchars($row['collection_name']),
       'description' => htmlspecialchars($row['collection_description']),
+      'started_at' => htmlspecialchars($row['started_at'] ?? ''),
+      'finished_at' => htmlspecialchars($row['finished_at'] ?? ''),
       'paintings' => []
     ];
   }
@@ -44,10 +53,27 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
       'description' => htmlspecialchars($row['painting_description']),
       'size_v' => htmlspecialchars($row['size_v']),
       'size_h' => htmlspecialchars($row['size_h']),
-      'date' => htmlspecialchars($row['finished_at']),
+      'date' => htmlspecialchars($row['painting_finished_at']),
     ];
   }
 }
+
+// Fetch all exhibitions with their first image
+$stmt = $pdo->query("
+    SELECT 
+        e.id AS exhibition_id,
+        e.location AS exhibition_location,
+        e.description AS exhibition_description,
+        e.started_at,
+        e.finished_at,
+        i.file_path AS filename
+    FROM exhibition e
+    LEFT JOIN exhibition_image ei ON e.id = ei.exhibition_id
+    LEFT JOIN image i ON ei.image_id = i.id
+    ORDER BY e.started_at DESC
+");
+
+$exhibitions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -76,7 +102,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     <span class="menu">
       <a href="/index.php#about-anchor">OM</a>
       <a href="/index.php#collections-anchor">KUNST</a>
-      <a>UTSTILLINGER</a>
+      <a href="/index.php#exhibitions-anchor">UTSTILLINGER</a>
       <a>KONTAKT</a>
     </span>
     <span class="logo">
@@ -121,23 +147,29 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         <div class="wrapper">
         <?php foreach ($collections as $collection): ?>
           <div class="collection">
-          <div class="title"><?= $collection['name'] ?></div>
-          <p class="description"><?= $collection['description'] ?></p>
-          <div class="gallery">
-            <?php foreach ($collection['paintings'] as $painting): ?>
-            <div class="picture" onclick="window.location.href = 'pages/painting.php?id=<?= $painting['id'] ?>'">
-              <img src="uploads/<?= $painting['filename'] ?>" alt="<?= $painting['title'] ?>">
-              <div class="overlay">
-              <p class="title"><?= $painting['title'] ?></p>
-              </div>
+            <div class="collection-header">
+              <div class="title"><?= $collection['name'] ?></div>
+              <p class="date"><?= $collection['started_at'] ?> - <?= $collection['finished_at'] ?></p>
             </div>
-            <?php endforeach; ?>
-          </div>
+            <p class="description"><?= $collection['description'] ?></p>
+            <div class="gallery">
+              <?php foreach ($collection['paintings'] as $painting): ?>
+              <div class="picture" onclick="window.location.href = 'pages/painting.php?id=<?= $painting['id'] ?>'">
+                <img src="uploads/<?= $painting['filename'] ?>" alt="<?= $painting['title'] ?>">
+                <div class="overlay">
+                <p class="title"><?= $painting['title'] ?></p>
+                <p class="date"><?= $painting['date']?></p>
+                </div>
+              </div>
+              <?php endforeach; ?>
+            </div>
           </div>
         <?php endforeach; ?>
         </div>
       </div>
     <?php endif; ?>
+
+    
 
     <div class="contact">
       <h2>Kontakt</h2>

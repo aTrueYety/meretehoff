@@ -134,6 +134,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Painting</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="/css/form.css">
+</head>
+<body>
 <h1>Edit Painting</h1>
 
 <?php if ($successMessage): ?>
@@ -155,21 +168,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="checkbox" name="is_sold" <?= $painting['is_sold'] ? 'checked' : '' ?>> Sold
     </label><br>
 
-    <h3>Existing Images</h3>
-    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+    <h3>Fjern bilder</h3>
+    <div id="imagePreview" style="display: flex; flex-wrap: wrap; gap: 10px;">
         <?php foreach ($images as $image): ?>
-            <div style="text-align: center; width: 120px;">
+            <div class="image-thumb" data-image-id="<?= htmlspecialchars($image['image_id']) ?>" style="text-align: center; width: 120px; cursor: pointer;">
                 <img src="../uploads/<?= htmlspecialchars($image['file_path']) ?>" alt="Image" width="100">
-                <br>
-                <label>
-                    <input type="checkbox" name="remove_image_ids[]" value="<?= $image['image_id'] ?>"> Remove
-                </label>
             </div>
         <?php endforeach; ?>
     </div>
+    <div id="removeImages"></div>
 
-    <h3>Add New Images</h3>
+    <h3>Legg til bilder</h3>
     <input type="file" name="new_images[]" multiple><br>
 
     <button type="submit">Update Painting</button>
 </form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const preview = document.getElementById('imagePreview');
+        const removeImages = document.getElementById('removeImages');
+        const selected = new Set();
+
+        preview.querySelectorAll('.image-thumb').forEach(function (thumb) {
+            thumb.addEventListener('click', function () {
+                const id = thumb.getAttribute('data-image-id');
+                if (selected.has(id)) {
+                    selected.delete(id);
+                    thumb.classList.remove('highlight');
+                    // Remove hidden input
+                    const input = removeImages.querySelector('input[value="' + id + '"]');
+                    if (input) input.remove();
+                } else {
+                    selected.add(id);
+                    thumb.classList.add('highlight');
+                    // Add hidden input
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'remove_image_ids[]';
+                    input.value = id;
+                    removeImages.appendChild(input);
+                }
+            });
+        });
+    });
+</script>
+<style>
+    .image-thumb.highlight {
+        outline: 3px solid #dc3545;
+        background: #ffeaea;
+        border-radius: 6px;
+    }
+</style>
+</body>
+</html>

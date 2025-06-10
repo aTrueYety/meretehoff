@@ -69,6 +69,19 @@ $stmt->execute();
 $pictures = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Collection</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="/css/form.css">
+</head>
+<body>
 <h1>Create Collection</h1>
 
 <?php if ($successMessage): ?>
@@ -82,14 +95,17 @@ $pictures = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <form method="POST">
     <input name="name" placeholder="Collection Name" required><br>
     <textarea name="description" placeholder="Description"></textarea><br>
-    <input name="started_at" type="datetime-local" placeholder="Start Date"><br>
-    <input name="ended_at" type="datetime-local" placeholder="End Date"><br>
+    <label for="started_at">Startdato:</label>
+    <input name="started_at" id="started_at" type="date" placeholder="Startdato"><br>
+    <label for="ended_at">Sluttdato:</label>
+    <input name="ended_at" id="ended_at" type="date" placeholder="Sluttdato"><br>
 
     <h3>Choose paintings to Add</h3>
-    <div class="painting-preview">
+    <div class="painting-preview" id="paintingPreview">
         <?php foreach ($pictures as $picture): ?>
-            <label style="display: inline-block; margin: 10px; text-align: center;">
-                <input type="checkbox" name="picture_ids[]" value="<?= $picture['painting_id'] ?>">
+            <div class="painting-thumb" 
+                 data-painting-id="<?= htmlspecialchars($picture['painting_id']) ?>" 
+                 style="display: inline-block; margin: 10px; text-align: center; cursor: pointer;">
                 <?php if (!empty($picture['image_path'])): ?>
                     <img src="../uploads/<?= htmlspecialchars($picture['image_path']) ?>" alt="Preview" style="width:100px;height:auto;display:block;">
                 <?php else: ?>
@@ -98,9 +114,49 @@ $pictures = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </div>
                 <?php endif; ?>
                 <span><?= htmlspecialchars($picture['painting_title'] ?? 'Untitled') ?></span>
-            </label>
+            </div>
         <?php endforeach; ?>
     </div>
-
+    <!-- Hidden container for selected painting ids -->
+    <div id="selectedPaintings"></div>
     <button type="submit">Create Collection</button>
 </form>
+<script>
+    // Add highlight class on click and manage hidden inputs
+    document.addEventListener('DOMContentLoaded', function () {
+        const preview = document.getElementById('paintingPreview');
+        const selectedPaintings = document.getElementById('selectedPaintings');
+        const selected = new Set();
+
+        preview.querySelectorAll('.painting-thumb').forEach(function (thumb) {
+            thumb.addEventListener('click', function () {
+                const id = thumb.getAttribute('data-painting-id');
+                if (selected.has(id)) {
+                    selected.delete(id);
+                    thumb.classList.remove('highlight');
+                    // Remove hidden input
+                    const input = selectedPaintings.querySelector('input[value="' + id + '"]');
+                    if (input) input.remove();
+                } else {
+                    selected.add(id);
+                    thumb.classList.add('highlight');
+                    // Add hidden input
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'picture_ids[]';
+                    input.value = id;
+                    selectedPaintings.appendChild(input);
+                }
+            });
+        });
+    });
+</script>
+<style>
+    .painting-thumb.highlight {
+        outline: 3px solid #007bff;
+        background: #e6f0ff;
+        border-radius: 6px;
+    }
+</style>
+</body>
+</html>
