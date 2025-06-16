@@ -98,6 +98,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Exhibition</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="/css/form.css">
+</head>
+<body>
 <h1>Create Exhibition</h1>
 
 <?php if ($successMessage): ?>
@@ -111,11 +124,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <form method="POST" enctype="multipart/form-data">
     <input name="location" placeholder="Location" required><br>
     <textarea name="description" placeholder="Description"></textarea><br>
-    <input name="started_at" type="datetime-local" placeholder="Start Date"><br>
-    <input name="finished_at" type="datetime-local" placeholder="End Date"><br>
+    <input name="started_at" type="date" placeholder="Start Date"><br>
+    <input name="finished_at" type="date" placeholder="End Date"><br>
 
     <h3>Upload Images for the Exhibition</h3>
-    <input type="file" name="new_images[]" multiple required><br>
+    <div id="fileInputs">
+        <input type="file" name="new_images[]" required><br>
+    </div>
+    <button type="button" onclick="addFileInput()">Add Another File</button><br>
 
     <button type="submit">Create Exhibition</button>
 </form>
+<script>
+    function addFileInput() {
+        const fileInputs = document.getElementById('fileInputs');
+        const newInput = document.createElement('input');
+        newInput.type = 'file';
+        newInput.name = 'new_images[]';
+        fileInputs.appendChild(newInput);
+        fileInputs.appendChild(document.createElement('br'));
+    }
+</script>
+</body>
+</html>

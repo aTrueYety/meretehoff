@@ -32,7 +32,7 @@
   font-weight: bold;
   font-size: 18px;
   transition: 0.6s ease;
-  border-radius: 0 3px 3px 0;
+  border-radius: 3px;
   user-select: none;
   z-index: 10000;
 }
@@ -42,7 +42,7 @@
   border-radius: 3px 0 0 3px;
 }
 
-.prev:hover, .next:hover {
+.prev:hover, .next:hover, .return:hover {
   background-color: rgba(0,0,0,0.8);
 }
 
@@ -93,4 +93,33 @@
 .details {
   background-color: #f0f0f0;
   padding: 2rem;
+
+  & .details-header {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 1rem;
+  }
+}
+
+.return {
+  position: absolute;
+  top: 4rem;
+  left: 1rem;
+  background-color: rgba(0,0,0,0);
+  border: none;
+  cursor: pointer;
+  width: 4rem;
+  aspect-ratio: 1;
+  z-index: 8000;
+  transition: 0.6s ease;
+  border-radius: 3px;
+
+  & img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    cursor: pointer;
+    filter: brightness(0) invert(1);
+  }
 }
