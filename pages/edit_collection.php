@@ -114,7 +114,7 @@ $currentPaintings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Edit Collection</title>
+    <title>Rediger sammling</title>
     <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon/favicon-16x16.png">
@@ -123,7 +123,7 @@ $currentPaintings = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="/css/form.css">
 </head>
 <body>
-<h1>Edit Collection</h1>
+<h1>Rediger sammling</h1>
 
 <?php if ($successMessage): ?>
   <p style="color: green"><?= htmlspecialchars($successMessage) ?></p>
@@ -134,12 +134,16 @@ $currentPaintings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <?php endforeach; ?>
 
 <form method="POST">
-  <input name="name" value="<?= htmlspecialchars($collection['name']) ?>" placeholder="Collection Name" required><br>
-  <textarea name="description" placeholder="Description"><?= htmlspecialchars($collection['description']) ?></textarea><br>
-  <input name="started_at" type="date" value="<?= htmlspecialchars($collection['started_at']) ?>" placeholder="Start Date"><br>
-  <input name="ended_at" type="date" value="<?= htmlspecialchars($collection['finished_at']) ?>" placeholder="End Date"><br>
+  <label for="name">Navn på samling</label>
+  <input id="name" name="name" value="<?= htmlspecialchars($collection['name']) ?>" placeholder="Navn på samling" required><br>
+  <label for="description">Beskrivelse</label>
+  <textarea id="description" name="description" placeholder="Beskrivelse"><?= htmlspecialchars($collection['description']) ?></textarea><br>
+  <label for="started_at">Startdato</label>
+  <input id="started_at" name="started_at" type="date" value="<?= htmlspecialchars($collection['started_at']) ?>" placeholder="Startdato"><br>
+  <label for="ended_at">Sluttdato</label>
+  <input id="ended_at" name="ended_at" type="date" value="<?= htmlspecialchars($collection['finished_at']) ?>" placeholder="Sluttdato"><br>
 
-  <h3>Choose paintings to Add or Remove</h3>
+  <h3>Velg malerier</h3>
   <div id="paintingPreview" style="display: flex; flex-wrap: wrap; gap: 10px;">
     <?php
       $currentPaintingIds = array_column($currentPaintings, 'painting_id');
@@ -161,7 +165,7 @@ $currentPaintings = $stmt->fetchAll(PDO::FETCH_ASSOC);
       <input type="hidden" name="picture_ids[]" value="<?= htmlspecialchars($pid) ?>">
     <?php endforeach; ?>
   </div>
-  <button type="submit">Update Collection</button>
+  <button type="submit">Oppdater samling</button>
 </form>
 
 <script>

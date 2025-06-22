@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Opprett nytt maleri</title>
+    <title>Opprett maleri</title>
     <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon/favicon-16x16.png">
@@ -104,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="/css/form.css">
 </head>
 <body>
-<h1>Opprett nytt maleri</h1>
+<h1>Opprett maleri</h1>
 
 <?php if ($successMessage): ?>
     <p style="color: green"><?= htmlspecialchars($successMessage) ?></p>
@@ -115,19 +115,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php endforeach; ?>
 
 <form method="POST" enctype="multipart/form-data" id="uploadForm">
-    <input name="title" placeholder="Painting Title (Optional)" required><br>
-    <input name="price" type="number" step="0.01" placeholder="Price" required><br>
-    <textarea name="description" placeholder="Description"></textarea><br>
-    <input name="size_v" type="number" step="0.01" placeholder="Vertical Size (cm)"><br>
-    <input name="size_h" type="number" step="0.01" placeholder="Horizontal Size (cm)"><br>
-    <label for="finished_at">Dato:</label>
-    <input id="finished_at" name="finished_at" type="date" placeholder="Finished Date" required><br>
+    <label for="title">Tittel</label>
+    <input id="title" name="title" placeholder="Tittel" required><br>
+    <label for="price">Pris</label>
+    <input id="price" name="price" type="number" step="0.01" placeholder="Pris" required><br>
+    <label for="description">Beskrivelse</label>
+    <textarea id="description" name="description" placeholder="Beskrivelse"></textarea><br>
+    <label for="size_v">Høyde (cm)</label>
+    <input id="size_v" name="size_v" type="number" step="0.01" placeholder="Høyde (cm)"><br>
+    <label for="size_h">Bredde (cm)</label>
+    <input id="size_h" name="size_h" type="number" step="0.01" placeholder="Bredde (cm)"><br>
+    <label for="finished_at">Dato ferdigstilt</label>
+    <input id="finished_at" name="finished_at" type="date" placeholder="Dato ferdigstilt" required><br>
     
+    <label>Bilder</label>
     <div id="fileInputs">
         <input type="file" name="images[]" required><br>
     </div>
-    <button type="button" onclick="addFileInput()">Add Another File</button><br>
-    <button type="submit">Opprett</button>
+    <button type="button" onclick="addFileInput()">Legg til et bilde til</button><br>
+    <button type="submit">Opprett maleri</button>
 </form>
 
 <script>

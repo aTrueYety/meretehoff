@@ -132,7 +132,7 @@ $images = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Edit Painting</title>
+    <title>Rediger maleri</title>
     <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon/favicon-16x16.png">
@@ -141,7 +141,7 @@ $images = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="/css/form.css">
 </head>
 <body>
-<h1>Edit Painting</h1>
+<h1>Reiger maleri</h1>
 
 <?php if ($successMessage): ?>
     <p style="color: green"><?= htmlspecialchars($successMessage) ?></p>
@@ -152,14 +152,20 @@ $images = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <?php endforeach; ?>
 
 <form method="POST" enctype="multipart/form-data">
-    <input name="title" value="<?= htmlspecialchars($painting['title']) ?>" placeholder="Title" required><br>
-    <input name="price" type="number" step="0.01" value="<?= htmlspecialchars($painting['price']) ?>" placeholder="Price"><br>
-    <textarea name="description" placeholder="Description"><?= htmlspecialchars($painting['description']) ?></textarea><br>
-    <input name="size_v" type="number" step="0.01" value="<?= htmlspecialchars($painting['size_v']) ?>" placeholder="Vertical Size (cm)"><br>
-    <input name="size_h" type="number" step="0.01" value="<?= htmlspecialchars($painting['size_h']) ?>" placeholder="Horizontal Size (cm)"><br>
-    <input name="finished_at" type="date" value="<?= htmlspecialchars($painting['finished_at']) ?>" placeholder="Finished Date"><br>
+    <label for="title">Tittel</label>
+    <input id="title" name="title" value="<?= htmlspecialchars($painting['title']) ?>" placeholder="Tittel" required><br>
+    <label for="price">Pris</label>
+    <input id="price" name="price" type="number" step="0.01" value="<?= htmlspecialchars($painting['price']) ?>" placeholder="Pris"><br>
+    <label for="description">Beskrivelse</label>
+    <textarea id="description" name="description" placeholder="Beskrivelse"><?= htmlspecialchars($painting['description']) ?></textarea><br>
+    <label for="size_v">Høyde (cm)</label>
+    <input id="size_v" name="size_v" type="number" step="0.01" value="<?= htmlspecialchars($painting['size_v']) ?>" placeholder="Høyde (cm)"><br>
+    <label for="size_h">Bredde (cm)</label>
+    <input id="size_h" name="size_h" type="number" step="0.01" value="<?= htmlspecialchars($painting['size_h']) ?>" placeholder="Bredde (cm)"><br>
+    <label for="finished_at">Ferdigstilt dato</label>
+    <input id="finished_at" name="finished_at" type="date" value="<?= htmlspecialchars($painting['finished_at']) ?>" placeholder="Ferdigstilt dato"><br>
     <label>
-        <input type="checkbox" name="is_sold" <?= $painting['is_sold'] ? 'checked' : '' ?>> Sold
+        <input type="checkbox" name="is_sold" <?= $painting['is_sold'] ? 'checked' : '' ?>> Solgt
     </label><br>
 
     <h3>Fjern bilder</h3>
@@ -175,7 +181,7 @@ $images = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <h3>Legg til bilder</h3>
     <input type="file" name="new_images[]" multiple><br>
 
-    <button type="submit">Update Painting</button>
+    <button type="submit">Oppdater maleri</button>
 </form>
 
 <script>

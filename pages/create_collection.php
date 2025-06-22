@@ -72,7 +72,7 @@ $pictures = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Create Collection</title>
+    <title>Opprett sammling</title>
     <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon/favicon-16x16.png">
@@ -81,7 +81,7 @@ $pictures = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="/css/form.css">
 </head>
 <body>
-<h1>Create Collection</h1>
+<h1>Opprett en samling</h1>
 
 <?php if ($successMessage): ?>
     <p style="color: green"><?= htmlspecialchars($successMessage) ?></p>
@@ -92,14 +92,16 @@ $pictures = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <?php endforeach; ?>
 
 <form method="POST">
-    <input name="name" placeholder="Collection Name" required><br>
-    <textarea name="description" placeholder="Description"></textarea><br>
-    <label for="started_at">Startdato:</label>
+    <label for="name">Navn på samling</label>
+    <input id="name" name="name" placeholder="Navn på samling" required><br>
+    <label for="description">Beskrivelse</label>
+    <textarea id="description" name="description" placeholder="Beskrivelse"></textarea><br>
+    <label for="started_at">Startdato</label>
     <input name="started_at" id="started_at" type="date" placeholder="Startdato"><br>
-    <label for="ended_at">Sluttdato:</label>
+    <label for="ended_at">Sluttdato</label>
     <input name="ended_at" id="ended_at" type="date" placeholder="Sluttdato"><br>
 
-    <h3>Choose paintings to Add</h3>
+    <h3>Velg malerier å legge til</h3>
     <div class="painting-preview" id="paintingPreview">
         <?php foreach ($pictures as $picture): ?>
             <div class="painting-thumb" 
@@ -118,7 +120,7 @@ $pictures = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
     <!-- Hidden container for selected painting ids -->
     <div id="selectedPaintings"></div>
-    <button type="submit">Create Collection</button>
+    <button type="submit">Opprett samling</button>
 </form>
 <script>
     // Add highlight class on click and manage hidden inputs

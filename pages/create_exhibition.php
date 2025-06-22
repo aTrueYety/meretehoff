@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Create Exhibition</title>
+    <title>Opprett utstilling</title>
     <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon/favicon-16x16.png">
@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="/css/form.css">
 </head>
 <body>
-<h1>Create Exhibition</h1>
+<h1>Opprett utstilling</h1>
 
 <?php if ($successMessage): ?>
     <p style="color: green"><?= htmlspecialchars($successMessage) ?></p>
@@ -111,18 +111,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php endforeach; ?>
 
 <form method="POST" enctype="multipart/form-data">
-    <input name="location" placeholder="Location" required><br>
-    <textarea name="description" placeholder="Description"></textarea><br>
-    <input name="started_at" type="date" placeholder="Start Date"><br>
-    <input name="finished_at" type="date" placeholder="End Date"><br>
+    <label for="location">Sted</label>
+    <input id="location" name="location" placeholder="Sted" required><br>
+    <label for="description">Beskrivelse</label>
+    <textarea id="description" name="description" placeholder="Beskrivelse"></textarea><br>
+    <label for="started_at">Startdato</label>
+    <input id="started_at" name="started_at" type="date" placeholder="Startdato"><br>
+    <label for="finished_at">Sluttdato</label>
+    <input id="finished_at" name="finished_at" type="date" placeholder="Sluttdato"><br>
 
-    <h3>Upload Images for the Exhibition</h3>
+    <h3>Last opp bilder til utstillingen</h3>
     <div id="fileInputs">
         <input type="file" name="new_images[]" required><br>
     </div>
-    <button type="button" onclick="addFileInput()">Add Another File</button><br>
+    <button type="button" onclick="addFileInput()">Legg til flere bilder</button><br>
 
-    <button type="submit">Create Exhibition</button>
+    <button type="submit">Opprett utstilling</button>
 </form>
 <script>
     function addFileInput() {
