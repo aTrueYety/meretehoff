@@ -4,12 +4,6 @@ CREATE TABLE user (
     password_hash VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE image (
-    id CHAR(36) PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    file_path VARCHAR(1024) NOT NULL
-);
-
 CREATE TABLE painting (
     id CHAR(36) PRIMARY KEY,
     title VARCHAR(255),
@@ -40,20 +34,20 @@ CREATE TABLE exhibition (
 );
 
 CREATE TABLE painting_image (
-    image_id CHAR(36),
     painting_id CHAR(36),
     position INT,
-    PRIMARY KEY (image_id, painting_id),
-    FOREIGN KEY (image_id) REFERENCES image(id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL,
+    file_path VARCHAR(1024) NOT NULL,
+    PRIMARY KEY (painting_id, position),
     FOREIGN KEY (painting_id) REFERENCES painting(id) ON DELETE CASCADE
 );
 
 CREATE TABLE exhibition_image (
-    image_id CHAR(36),
     exhibition_id CHAR(36),
     position INT,
-    PRIMARY KEY (image_id, exhibition_id),
-    FOREIGN KEY (image_id) REFERENCES image(id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL,
+    file_path VARCHAR(1024) NOT NULL,
+    PRIMARY KEY (exhibition_id, position),
     FOREIGN KEY (exhibition_id) REFERENCES exhibition(id) ON DELETE CASCADE
 );
 

@@ -60,10 +60,9 @@ $stmt = $pdo->prepare("
     SELECT 
         p.id AS painting_id,
         p.title AS painting_title,
-        i.file_path AS image_path
+        pi.file_path AS image_path
     FROM painting p
     LEFT JOIN painting_image pi ON p.id = pi.painting_id AND pi.position = 1
-    LEFT JOIN image i ON pi.image_id = i.id
 ");
 $stmt->execute();
 $pictures = $stmt->fetchAll(PDO::FETCH_ASSOC);

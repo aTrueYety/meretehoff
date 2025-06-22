@@ -63,27 +63,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $uploadPath = $uploadDir . $filename;
 
                 if (move_uploaded_file($files['tmp_name'][$i], $uploadPath)) {
-                    // Save the image to the database
-                    $imageId = bin2hex(random_bytes(16));
+                    // Save the image to the exhibition_image table
                     $stmt = $pdo->prepare("
-                        INSERT INTO image (id, title, file_path) 
-                        VALUES (:id, :title, :file_path)
+                        INSERT INTO exhibition_image (exhibition_id, position, title, file_path) 
+                        VALUES (:exhibition_id, :position, :title, :file_path)
                     ");
                     $stmt->execute([
-                        'id' => $imageId,
-                        'title' => $location, // Use location as the title for now
-                        'file_path' => $filename,
-                    ]);
-
-                    // Link the image to the exhibition
-                    $stmt = $pdo->prepare("
-                        INSERT INTO exhibition_image (image_id, exhibition_id, position) 
-                        VALUES (:image_id, :exhibition_id, :position)
-                    ");
-                    $stmt->execute([
-                        'image_id' => $imageId,
                         'exhibition_id' => $exhibitionId,
                         'position' => $position++,
+                        'title' => $location, // Use location as the title for now
+                        'file_path' => $filename,
                     ]);
                 } else {
                     $errors[] = "Failed to upload file {$files['name'][$i]}.";

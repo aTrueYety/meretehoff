@@ -16,26 +16,6 @@ if (!$paintingId) {
     die("Painting ID is required.");
 }
 
-// Fetch existing painting data
-$stmt = $pdo->prepare("SELECT * FROM painting WHERE id = :id");
-$stmt->execute(['id' => $paintingId]);
-$painting = $stmt->fetch(PDO::FETCH_ASSOC);
-
-if (!$painting) {
-    die("Painting not found.");
-}
-
-// Fetch existing images for the painting
-$stmt = $pdo->prepare("
-    SELECT i.id AS image_id, i.file_path 
-    FROM painting_image pi
-    JOIN image i ON pi.image_id = i.id
-    WHERE pi.painting_id = :painting_id
-    ORDER BY pi.position
-");
-$stmt->execute(['painting_id' => $paintingId]);
-$images = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim($_POST['title'] ?? '');
@@ -71,10 +51,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Handle image removal
-    $removeImageIds = $_POST['remove_image_ids'] ?? [];
-    foreach ($removeImageIds as $imageId) {
-        $stmt = $pdo->prepare("DELETE FROM image WHERE id = :id");
-        $stmt->execute(['id' => $imageId]);
+    $removeImagePositions = $_POST['remove_image_positions'] ?? [];
+    foreach ($removeImagePositions as $position) {
+        $stmt = $pdo->prepare("DELETE FROM painting_image WHERE painting_id = :painting_id AND position = :position");
+        $stmt->execute(['painting_id' => $paintingId, 'position' => $position]);
     }
 
     // Handle new image uploads
@@ -82,6 +62,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $files = $_FILES['new_images'];
         $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
         $maxSize = 5 * 1024 * 1024; // 5MB max size
+
+        // Find the next available position
+        $stmt = $pdo->prepare("SELECT MAX(position) AS max_pos FROM painting_image WHERE painting_id = :painting_id");
+        $stmt->execute(['painting_id' => $paintingId]);
+        $maxPos = (int)($stmt->fetchColumn() ?? 0);
+        $position = $maxPos + 1;
 
         for ($i = 0; $i < count($files['name']); $i++) {
             if (!in_array($files['type'][$i], $allowedTypes)) {
@@ -100,27 +86,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $uploadPath = $uploadDir . $filename;
 
             if (move_uploaded_file($files['tmp_name'][$i], $uploadPath)) {
-                // Save the image to the database
-                $imageId = bin2hex(random_bytes(16));
+                // Save the image to the painting_image table
                 $stmt = $pdo->prepare("
-                    INSERT INTO image (id, title, file_path) 
-                    VALUES (:id, :title, :file_path)
+                    INSERT INTO painting_image (painting_id, position, title, file_path) 
+                    VALUES (:painting_id, :position, :title, :file_path)
                 ");
                 $stmt->execute([
-                    'id' => $imageId,
+                    'painting_id' => $paintingId,
+                    'position' => $position++,
                     'title' => $title,
                     'file_path' => $filename,
-                ]);
-
-                // Link the image to the painting
-                $stmt = $pdo->prepare("
-                    INSERT INTO painting_image (image_id, painting_id, position) 
-                    VALUES (:image_id, :painting_id, :position)
-                ");
-                $stmt->execute([
-                    'image_id' => $imageId,
-                    'painting_id' => $paintingId,
-                    'position' => $i + 1,
                 ]);
             } else {
                 $errors[] = "Failed to upload file {$files['name'][$i]}.";
@@ -132,6 +107,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $successMessage = "Painting updated successfully!";
     }
 }
+
+// Fetch existing painting data
+$stmt = $pdo->prepare("SELECT * FROM painting WHERE id = :id");
+$stmt->execute(['id' => $paintingId]);
+$painting = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$painting) {
+    die("Painting not found.");
+}
+
+// Fetch existing images for the painting
+$stmt = $pdo->prepare("
+    SELECT position, file_path 
+    FROM painting_image
+    WHERE painting_id = :painting_id
+    ORDER BY position
+");
+$stmt->execute(['painting_id' => $paintingId]);
+$images = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -171,7 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <h3>Fjern bilder</h3>
     <div id="imagePreview" style="display: flex; flex-wrap: wrap; gap: 10px;">
         <?php foreach ($images as $image): ?>
-            <div class="image-thumb" data-image-id="<?= htmlspecialchars($image['image_id']) ?>" style="text-align: center; width: 120px; cursor: pointer;">
+            <div class="image-thumb" data-image-position="<?= htmlspecialchars($image['position']) ?>" style="text-align: center; width: 120px; cursor: pointer;">
                 <img src="../uploads/<?= htmlspecialchars($image['file_path']) ?>" alt="Image" width="100">
             </div>
         <?php endforeach; ?>
@@ -192,21 +186,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         preview.querySelectorAll('.image-thumb').forEach(function (thumb) {
             thumb.addEventListener('click', function () {
-                const id = thumb.getAttribute('data-image-id');
-                if (selected.has(id)) {
-                    selected.delete(id);
+                const pos = thumb.getAttribute('data-image-position');
+                if (selected.has(pos)) {
+                    selected.delete(pos);
                     thumb.classList.remove('highlight');
                     // Remove hidden input
-                    const input = removeImages.querySelector('input[value="' + id + '"]');
+                    const input = removeImages.querySelector('input[value="' + pos + '"]');
                     if (input) input.remove();
                 } else {
-                    selected.add(id);
+                    selected.add(pos);
                     thumb.classList.add('highlight');
                     // Add hidden input
                     const input = document.createElement('input');
                     input.type = 'hidden';
-                    input.name = 'remove_image_ids[]';
-                    input.value = id;
+                    input.name = 'remove_image_positions[]';
+                    input.value = pos;
                     removeImages.appendChild(input);
                 }
             });

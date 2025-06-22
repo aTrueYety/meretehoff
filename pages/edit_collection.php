@@ -81,9 +81,8 @@ $stmt = $pdo->prepare("
         p.id AS painting_id,
         p.title AS painting_title,
         (
-            SELECT i.file_path
+            SELECT pi2.file_path
             FROM painting_image pi2
-            LEFT JOIN image i ON pi2.image_id = i.id
             WHERE pi2.painting_id = p.id
             ORDER BY pi2.position ASC
             LIMIT 1
@@ -98,9 +97,8 @@ $stmt = $pdo->prepare("
     SELECT 
         p.id AS painting_id,
         (
-            SELECT i.file_path
+            SELECT pi2.file_path
             FROM painting_image pi2
-            LEFT JOIN image i ON pi2.image_id = i.id
             WHERE pi2.painting_id = p.id
             ORDER BY pi2.position ASC
             LIMIT 1

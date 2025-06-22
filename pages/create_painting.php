@@ -73,29 +73,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Save each image and link it to the painting
             $position = 1;
             foreach ($uploadedFiles as $filename) {
-                // Generate a UUID for the image
-                $imageId = bin2hex(random_bytes(16)); // Generate a 36-character UUID
-
-                // Save the image details in the image table
                 $stmt = $pdo->prepare("
-                    INSERT INTO image (id, title, file_path) 
-                    VALUES (:id, :title, :file_path)
+                    INSERT INTO painting_image (painting_id, position, title, file_path) 
+                    VALUES (:painting_id, :position, :title, :file_path)
                 ");
                 $stmt->execute([
-                    'id' => $imageId,
-                    'title' => $_POST['title'] ?? 'Untitled',
-                    'file_path' => $filename,
-                ]);
-
-                // Link the image to the painting
-                $stmt = $pdo->prepare("
-                    INSERT INTO painting_image (image_id, painting_id, position) 
-                    VALUES (:image_id, :painting_id, :position)
-                ");
-                $stmt->execute([
-                    'image_id' => $imageId,
                     'painting_id' => $paintingId,
                     'position' => $position++,
+                    'title' => $_POST['title'] ?? 'Untitled',
+                    'file_path' => $filename,
                 ]);
             }
 

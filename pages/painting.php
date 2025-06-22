@@ -31,11 +31,10 @@ if (!$painting) {
 
 // Fetch associated images
 $imageQuery = $pdo->prepare("
-    SELECT i.file_path 
-    FROM painting_image pi
-    JOIN image i ON pi.image_id = i.id
-    WHERE pi.painting_id = :painting_id
-    ORDER BY pi.position
+    SELECT file_path 
+    FROM painting_image
+    WHERE painting_id = :painting_id
+    ORDER BY position
 ");
 $imageQuery->execute(['painting_id' => $paintingId]);
 $images = $imageQuery->fetchAll(PDO::FETCH_ASSOC);
@@ -58,23 +57,39 @@ $images = $imageQuery->fetchAll(PDO::FETCH_ASSOC);
 
 <body>
   <div id="navbar" class="navbar sticky">
-    <span class="hamburger" onclick="
-        document.querySelector('.navbar').classList.toggle('open');">
+    <span class="hamburger" tabindex="0" role="button" aria-label="Åpne/lukk meny"
+      onclick="document.querySelector('.navbar').classList.toggle('open');"
+      onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.querySelector('.navbar').classList.toggle('open');}">
       <img src="/img/menu.svg" alt="meny">
     </span>
     <span class="menu">
       <a href="/index.php#about-anchor" onclick="document.querySelector('.navbar').classList.remove('open');">OM</a>
-      <a href="/index.php#collections-anchor" onclick="document.querySelector('.navbar').classList.remove('open');">KUNST</a>
-      <a href="/index.php#exhibitions-anchor" onclick="document.querySelector('.navbar').classList.remove('open');">UTSTILLINGER</a>
-      <a href="/index.php#contact-anchor" onclick="document.querySelector('.navbar').classList.remove('open');">KONTAKT</a>
+      <a href="/index.php#collections-anchor"
+        onclick="document.querySelector('.navbar').classList.remove('open');">KUNST</a>
+      <a href="/index.php#exhibitions-anchor"
+        onclick="document.querySelector('.navbar').classList.remove('open');">UTSTILLINGER</a>
+      <a href="/index.php#contact-anchor"
+        onclick="document.querySelector('.navbar').classList.remove('open');">KONTAKT</a>
     </span>
     <span class="logo">
-      <h2 onclick="window.location.href='/index.php#';document.querySelector('.navbar').classList.remove('open');">Merete Hoff</h2>
+      <h2 tabindex="0" role="button" aria-label="Gå til toppen"
+        onclick="window.location.href='/index.php#';document.querySelector('.navbar').classList.remove('open');"
+        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.href='/index.php#';document.querySelector('.navbar').classList.remove('open');}">
+        Merete Hoff</h2>
     </span>
   </div>
 
-  <button class="return">
-    <img src="/img/return.svg" alt="Tilbake" onclick="window.history.back();">
+  <button 
+    class="return"
+    onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.history.back();}"
+    onclick="window.history.back();"
+    aria-label="Tilbake"
+    tabindex="0"
+  >
+    <img 
+      src="/img/return.svg" 
+      alt="Tilbake" 
+    >
   </button>
 
   <div class="slideshow-wrapper">
@@ -88,8 +103,14 @@ $images = $imageQuery->fetchAll(PDO::FETCH_ASSOC);
         <?php endforeach; ?>
 
         <!-- Next and previous buttons -->
-        <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
-        <a class="next" onclick="plusSlides(1)">&#10095;</a>
+        <a class="prev" tabindex="0" role="button" aria-label="Forrige bilde"
+           onclick="plusSlides(-1)"
+           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();plusSlides(-1);}">&#10094;
+        </a>
+        <a class="next" tabindex="0" role="button" aria-label="Neste bilde"
+           onclick="plusSlides(1)"
+           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();plusSlides(1);}">&#10095;
+        </a>
       </div>
       <br>
 
@@ -105,13 +126,33 @@ $images = $imageQuery->fetchAll(PDO::FETCH_ASSOC);
   <div class="details">
     <div class="details-header">
       <h1><?php echo htmlspecialchars($painting['title']); ?></h1>
-      <p><?php echo number_format($painting['price'], 0); ?>,-</p>
+      <p class="weak"><?php echo number_format($painting['price'], 0); ?>,-</p>
+      <?php if ($painting['is_sold']): ?>
+        <p class="weak">Solgt</p>
+      <?php else: ?>
+        <p class="weak">Tilgjengelig</p>
+      <?php endif; ?>
+      <?php if (!empty($_SESSION['username'])): ?>
+        <button 
+          class="admin-action netrual"
+          onclick="window.location.href='/pages/edit_painting.php?id=<?php echo $paintingId; ?>'"
+        >
+          <img src="../img/edit.svg" alt="Rediger bilde">
+          <span>Rediger</span>
+        </button>
+        <button 
+          class="admin-action negative"
+          onclick="window.location.href='/pages/delete_painting.php?id=<?php echo $paintingId; ?>'"
+        >
+          <img src="../img/delete.svg" alt="Slett bilde">
+          <span>Slett</span>
+        </button>
+      <?php endif; ?>
     </div>
     <p><?php echo nl2br(htmlspecialchars($painting['description'])); ?></p>
     <p><strong>Størrelse:</strong>
       <?php echo htmlspecialchars($painting['size_v']) . ' x ' . htmlspecialchars($painting['size_h']); ?> cm</p>
     <p><strong>Ferdigstillt:</strong> <?php echo htmlspecialchars($painting['finished_at']); ?></p>
-    <p><strong>Status:</strong> <?php echo $painting['is_sold'] ? 'Solgt' : 'Tilgjengelig'; ?></p>
   </div>
 
   <script>
