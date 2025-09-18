@@ -59,21 +59,21 @@ $images = $imageQuery->fetchAll(PDO::FETCH_ASSOC);
     <span class="hamburger" tabindex="0" role="button" aria-label="Åpne/lukk meny"
       onclick="document.querySelector('.navbar').classList.toggle('open');"
       onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.querySelector('.navbar').classList.toggle('open');}">
-      <img src="/img/menu.svg" alt="meny">
+      <img src="../img/menu.svg" alt="meny">
     </span>
     <span class="menu">
-      <a href="/index.php#about-anchor" onclick="document.querySelector('.navbar').classList.remove('open');">OM</a>
-      <a href="/index.php#collections-anchor"
+      <a href="../index.php#about-anchor" onclick="document.querySelector('.navbar').classList.remove('open');">OM</a>
+      <a href="../index.php#collections-anchor"
         onclick="document.querySelector('.navbar').classList.remove('open');">KUNST</a>
-      <a href="/index.php#exhibitions-anchor"
+      <a href="../index.php#exhibitions-anchor"
         onclick="document.querySelector('.navbar').classList.remove('open');">UTSTILLINGER</a>
-      <a href="/index.php#contact-anchor"
+      <a href="../index.php#contact-anchor"
         onclick="document.querySelector('.navbar').classList.remove('open');">KONTAKT</a>
     </span>
     <span class="logo">
       <h2 tabindex="0" role="button" aria-label="Gå til toppen"
-        onclick="window.location.href='/index.php#';document.querySelector('.navbar').classList.remove('open');"
-        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.href='/index.php#';document.querySelector('.navbar').classList.remove('open');}">
+        onclick="window.location.href='../index.php#';document.querySelector('.navbar').classList.remove('open');"
+        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.href='../index.php#';document.querySelector('.navbar').classList.remove('open');}">
         Merete Hoff</h2>
     </span>
   </div>
@@ -86,7 +86,7 @@ $images = $imageQuery->fetchAll(PDO::FETCH_ASSOC);
     tabindex="0"
   >
     <img 
-      src="/img/return.svg" 
+      src="../img/return.svg" 
       alt="Tilbake" 
     >
   </button>
@@ -98,7 +98,7 @@ $images = $imageQuery->fetchAll(PDO::FETCH_ASSOC);
           <div class="mySlides fade">
             <div class="numbertext"><?php echo $index + 1; ?> / <?php echo count($images); ?></div>
             <img 
-              src="/../uploads/<?php echo htmlspecialchars($image['file_path']); ?>" 
+              src="../uploads/<?php echo htmlspecialchars($image['file_path']); ?>" 
               style="width:100%" 
               alt="Bilde av maleriet <?php echo htmlspecialchars($painting['title']); ?>"
             >

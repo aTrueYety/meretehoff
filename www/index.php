@@ -119,21 +119,21 @@ $exhibitions = array_values($exhibitions); // Re-index for foreach
     <span class="hamburger" tabindex="0" role="button" aria-label="Åpne/lukk meny"
       onclick="document.querySelector('.navbar').classList.toggle('open');"
       onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.querySelector('.navbar').classList.toggle('open');}">
-      <img src="/img/menu.svg" alt="meny">
+      <img src="./img/menu.svg" alt="meny">
     </span>
     <span class="menu">
-      <a href="/index.php#about-anchor" onclick="document.querySelector('.navbar').classList.remove('open');">OM</a>
-      <a href="/index.php#collections-anchor"
+      <a href="./index.php#about-anchor" onclick="document.querySelector('.navbar').classList.remove('open');">OM</a>
+      <a href="./index.php#collections-anchor"
         onclick="document.querySelector('.navbar').classList.remove('open');">KUNST</a>
-      <a href="/index.php#exhibitions-anchor"
+      <a href="./index.php#exhibitions-anchor"
         onclick="document.querySelector('.navbar').classList.remove('open');">UTSTILLINGER</a>
-      <a href="/index.php#contact-anchor"
+      <a href="./index.php#contact-anchor"
         onclick="document.querySelector('.navbar').classList.remove('open');">KONTAKT</a>
     </span>
     <span class="logo">
       <h2 tabindex="0" role="button" aria-label="Gå til toppen"
-        onclick="window.location.href='/index.php#';document.querySelector('.navbar').classList.remove('open');"
-        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.href='/index.php#';document.querySelector('.navbar').classList.remove('open');}">
+        onclick="window.location.href='./index.php#';document.querySelector('.navbar').classList.remove('open');"
+        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.href='./index.php#';document.querySelector('.navbar').classList.remove('open');}">
         Merete Hoff</h2>
     </span>
   </div>
@@ -143,28 +143,43 @@ $exhibitions = array_values($exhibitions); // Re-index for foreach
     <div class="about">
       <div id="about-anchor"></div>
       <div style="align-self: flex-start;">
-        <h1>Om meg</h1>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla placerat mi purus, vel interdum sem finibus
-          vel.
-          Nam laoreet laoreet nunc sed elementum. Aenean a enim ut est ultrices dictum in ac libero. Donec mattis, orci
-          vitae faucibus suscipit, erat lectus tempus erat, vel pulvinar urna diam in magna. Vestibulum ante ipsum
-          primis
-          in faucibus orci luctus et ultrices posuere cubilia curae; Phasellus rutrum erat aliquet lacus viverra
-          rhoncus.
-          Praesent faucibus rutrum ligula, vel ullamcorper nisl venenatis non. Nunc efficitur sagittis quam. Aenean at
-          faucibus mi. Etiam venenatis mattis elementum. Aliquam accumsan turpis erat, in vulputate dui maximus id.</p>
+        <h1>Om Kunstneren</h1>
+        <p>Kunstneren har bakgrunn som arkitekt og leder, og har gjennom hele livet kombinert dette
+        med en skaperglede innen kunst. Hun har studert skulptur, land art, performance art, croquis,
+        foto og illustrasjon, og har deltatt i en rekke tverrfaglige prosjekter der kunst og arkitektur
+        møtes.
+        </p><p>
+        I 2014 fordype hun seg innen billedkunst for å utvikle sitt eget uttrykk. Atelieret fungerer som
+        en arena for eksperimentering og refleksjon, der prosessen og opplevelsen av flyt er like
+        viktig som det ferdige verket.
+        </p><p>
+        Med arkitektens blikk for komposisjon, rom og materialer, og lederens evne til struktur og
+        målrettet arbeid, søker hun å finne balansen mellom kreativ skaperkraft og planmessig
+        intensjon. Kunstnerskapet er en pågående reise - og hvert verk et steg på veien.
+        </p>
       </div>
       <div style="align-self: flex-end; text-align: right;">
         <h1>Om kunsten</h1>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla placerat mi purus, vel interdum sem finibus
-          vel.
-          Nam laoreet laoreet nunc sed elementum. Aenean a enim ut est ultrices dictum in ac libero. Donec mattis, orci
-          vitae faucibus suscipit, erat lectus tempus erat, vel pulvinar urna diam in magna. Vestibulum ante ipsum
-          primis
-          in faucibus orci luctus et ultrices posuere cubilia curae; Phasellus rutrum erat aliquet lacus viverra
-          rhoncus.
-          Praesent faucibus rutrum ligula, vel ullamcorper nisl venenatis non. Nunc efficitur sagittis quam. Aenean at
-          faucibus mi. Etiam venenatis mattis elementum. Aliquam accumsan turpis erat, in vulputate dui maximus id.</p>
+        <p>Kunstneren arbeider med abstrakt og non-figurativ akrylmaling på lerret; ofte i kvadratisk
+        format for å unngå assosiasjoner til portrett eller landskap. Inspirasjon hentes ofte fra
+        naturens makro- og mikrostrukturer i biologi eller naturvitenskap. Den kan også formidler
+        stemninger og følelser, eller ta utgangspunkt i filosofi eller et samfunnsaktuelle tema.
+        </p><p>
+        Arbeidene bygges opp gjennom format, komposisjon og struktur - i kontrast eller harmoni -
+        for å skape dybde, ro eller dramatikk. Fargepaletten er ofte enkel, men inngår i en
+        kontinuerlig utforskning av samspill og dybde.
+        </p><p>
+        Hun jobber serielt, med flere parallelle verk. I serien som vises i 2025 undersøkes flyt og
+        spenning mellom objekter, med lag av transparens, lys og mørke, mønster og pastos.
+        </p><p>
+        Andre serier kunstneren arbeider med kombinerer råstålplater med akryl, tekstil, stein og
+        glass. Platene påvirkes av elementene, og korroderes langsomt over tid før de til slutt settes
+        sammen i større komposisjoner.
+        </p><p>
+        Kunstnerens praksis befinner seg i skjæringspunktet mellom billedkunst og arkitektur - der
+        det todimensjonale møter det tredimensjonale, og materialitet og romlig opplevelse står
+        sentralt.
+        </p>
       </div>
     </div>
 
@@ -326,8 +341,8 @@ $exhibitions = array_values($exhibitions); // Re-index for foreach
   <div class="footer">
     <p>© 2023 Merete Hoff. Alle rettigheter reservert.</p>
     <?php if (!empty($_SESSION['username'])): ?>
-      <p>Logget inn som <?= htmlspecialchars($_SESSION['username']) ?></p>
       <span>
+        <p>Logget inn som <?= htmlspecialchars($_SESSION['username']) ?> - </p>
         <a href="pages/logout.php">Logg ut</a>
       </span>
     <?php else: ?>
