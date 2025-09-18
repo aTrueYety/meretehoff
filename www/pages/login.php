@@ -2,7 +2,13 @@
 session_start();
 require_once __DIR__ . '/../db/db.php';
 
+// show errors while debugging
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 $errors = [];
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $username = trim($_POST['username'] ?? '');
   $password = $_POST['password'] ?? '';
@@ -22,8 +28,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 }
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -39,11 +43,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 
 <body>
-
   <div class="form-head">
     <h1>Login</h1>
     <a href="/index.php">Tilbake</a>
   </div>
+
   <?php foreach ($errors as $error): ?>
     <p style="color:red"><?= htmlspecialchars($error) ?></p>
   <?php endforeach; ?>
