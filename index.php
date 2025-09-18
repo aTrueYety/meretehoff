@@ -325,7 +325,7 @@ $exhibitions = array_values($exhibitions); // Re-index for foreach
   </div>
 
   <div class="footer">
-    <p>© 2023 Merete Hoff</p>
+    <p>© 2023 Merete Hoff. Alle rettigheter reservert.</p>
     <?php if (!empty($_SESSION['username'])): ?>
       <p>Logget inn som <?= htmlspecialchars($_SESSION['username']) ?></p>
       <span>
@@ -334,7 +334,8 @@ $exhibitions = array_values($exhibitions); // Re-index for foreach
     <?php else: ?>
       <span>
         <a href="pages/login.php">Log inn</a>
-        <p> / </p><a href="pages/register.php">Register</a>
+        <p> / </p>
+        <a href="pages/register.php">Register</a>
       </span>
     <?php endif; ?>
   </div>
