@@ -78,9 +78,27 @@ a {
 
   & div {
     padding: 1rem;
-    background-color: #f0f0f0a6;
     color: rgb(0, 0, 0);
     transform: translateY(5rem);
+    overflow: hidden;
+    
+    & .blur {
+      z-index: -4;
+      background-color: rgba(240, 240, 240, 0.7);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100vw;
+      height: 100vh;
+      transform: translate(-50%, -50%);
+        
+      backdrop-filter: blur(10px); /* The core of the frosted effect */
+      -webkit-backdrop-filter: blur(10px); /* For Safari compatibility */
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Adds depth */
+      border: 1px solid rgba(255, 255, 255, 0.3); /* Optional: Subtle border */
+    }
 
     & p {
       margin: 0;

@@ -110,6 +110,7 @@ $exhibitions = array_values($exhibitions); // Re-index for foreach
 <body>
   <div class="header">
     <div>
+      <div class="blur"></div>
       <h1>Merete Hoff</h1>
       <p>Kunst</p>
     </div>
