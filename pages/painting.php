@@ -98,7 +98,11 @@ $images = $imageQuery->fetchAll(PDO::FETCH_ASSOC);
         <?php foreach ($images as $index => $image): ?>
           <div class="mySlides fade">
             <div class="numbertext"><?php echo $index + 1; ?> / <?php echo count($images); ?></div>
-            <img src="/../uploads/<?php echo htmlspecialchars($image['file_path']); ?>" style="width:100%">
+            <img 
+              src="/../uploads/<?php echo htmlspecialchars($image['file_path']); ?>" 
+              style="width:100%" 
+              alt="Bilde av maleriet <?php echo htmlspecialchars($painting['title']); ?>"
+            >
           </div>
         <?php endforeach; ?>
 
@@ -117,7 +121,14 @@ $images = $imageQuery->fetchAll(PDO::FETCH_ASSOC);
       <!-- The dots/circles -->
       <div style="text-align:center">
         <?php foreach ($images as $index => $image): ?>
-          <span class="dot" onclick="currentSlide(<?php echo $index + 1; ?>)"></span>
+          <span 
+            class="dot" 
+            tabindex="0" 
+            role="button" 
+            aria-label="Bilde <?php echo $index + 1; ?>" 
+            onclick="currentSlide(<?php echo $index + 1; ?>)"
+            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();currentSlide(<?php echo $index + 1; ?>);}"
+          ></span>
         <?php endforeach; ?>
       </div>
     <?php endif; ?>

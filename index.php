@@ -306,19 +306,16 @@ $exhibitions = array_values($exhibitions); // Re-index for foreach
         <div class="contact-details">
           <H2>Merete Hoff</H2>
           <button onclick="window.location.href='tel:+4799999999'">
-            <img src="img/phone.svg" alt="Telefon"
-              style="width:24px;vertical-align:middle;margin-right:8px;filter:invert(1);">
+            <img src="img/phone.svg" alt="Telefon">
             <p>+47 99999999</p>
           </button>
           <button onclick="window.location.href='mailto:post@gmail.com'">
-            <img src="img/mail.svg" alt="E-post"
-              style="width:24px;vertical-align:middle;margin-right:8px;filter:invert(1);">
+            <img src="img/mail.svg" alt="E-post">
             <p>post@gmail.com</p>
           </button>
           <button
             onclick="window.location.href='https://www.google.com/maps/place/Aker+brygge,+Oslo/@59.9099508,10.7208394,16z/data=!3m1!4b1!4m6!3m5!1s0x46416e81bceae4f9:0xe68ffef57f364675!8m2!3d59.9099584!4d10.7258053!16s%2Fm%2F02qjqd1?entry=ttu&g_ep=EgoyMDI1MDYxMS4wIKXMDSoASAFQAw%3D%3D'">
-            <img src="img/address.svg" alt="Adresse"
-              style="width:24px;vertical-align:middle;margin-right:8px;filter:invert(1);">
+            <img src="img/address.svg" alt="Adresse">
             <p>Eksempelveien 1, 1234 Oslo</p>
           </button>
         </div>

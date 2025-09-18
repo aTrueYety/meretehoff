@@ -4,8 +4,8 @@ session_start();
 
 // Redirect to login if not logged in
 if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
-    exit;
+  header('Location: login.php');
+  exit;
 }
 
 $errors = [];
@@ -13,46 +13,46 @@ $successMessage = '';
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = trim($_POST['name'] ?? '');
-    $description = trim($_POST['description'] ?? '');
-    $pictureIds = $_POST['picture_ids'] ?? []; // Get picture IDs to add to collection
+  $name = trim($_POST['name'] ?? '');
+  $description = trim($_POST['description'] ?? '');
+  $pictureIds = $_POST['picture_ids'] ?? []; // Get picture IDs to add to collection
 
-    if (empty($name)) {
-        $errors[] = "Collection name is required.";
-    }
+  if (empty($name)) {
+    $errors[] = "Collection name is required.";
+  }
 
-    if (empty($errors)) {
-        // Generate a UUID for the collection
-        $collectionId = bin2hex(random_bytes(16)); // Generate a 36-character UUID
+  if (empty($errors)) {
+    // Generate a UUID for the collection
+    $collectionId = bin2hex(random_bytes(16)); // Generate a 36-character UUID
 
-        // Insert the collection into the database
-        $stmt = $pdo->prepare("
+    // Insert the collection into the database
+    $stmt = $pdo->prepare("
             INSERT INTO collection (id, name, description, started_at, finished_at) 
             VALUES (:id, :name, :description, :started_at, :finished_at)
         ");
-        $stmt->execute([
-            'id' => $collectionId,
-            'name' => $name,
-            'description' => $description,
-            'started_at' => $_POST['started_at'] ?? null,
-            'finished_at' => $_POST['ended_at'] ?? null,
-        ]);
+    $stmt->execute([
+      'id' => $collectionId,
+      'name' => $name,
+      'description' => $description,
+      'started_at' => $_POST['started_at'] ?? null,
+      'finished_at' => $_POST['ended_at'] ?? null,
+    ]);
 
-        // Insert paintings into the collection
-        foreach ($pictureIds as $position => $pictureId) {
-            $stmt = $pdo->prepare("
+    // Insert paintings into the collection
+    foreach ($pictureIds as $position => $pictureId) {
+      $stmt = $pdo->prepare("
                 INSERT INTO collection_painting (painting_id, collection_id, position) 
                 VALUES (:painting_id, :collection_id, :position)
             ");
-            $stmt->execute([
-                'painting_id' => $pictureId,
-                'collection_id' => $collectionId,
-                'position' => $position + 1,
-            ]);
-        }
-
-        $successMessage = "Collection created successfully!";
+      $stmt->execute([
+        'painting_id' => $pictureId,
+        'collection_id' => $collectionId,
+        'position' => $position + 1,
+      ]);
     }
+
+    $successMessage = "Collection created successfully!";
+  }
 }
 
 // Fetch all paintings with their first image
@@ -70,28 +70,34 @@ $pictures = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Opprett sammling</title>
-    <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
-    <link rel="stylesheet" href="/css/form.css">
+  <meta charset="UTF-8">
+  <title>Opprett sammling</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+  <link rel="stylesheet" href="/css/index.css">
+  <link rel="stylesheet" href="/css/form.css">
 </head>
+
 <body>
-<h1>Opprett en samling</h1>
+  <div class="form-head">
+    <h1>Opprett samling</h1>
+    <a href="../index.php#collections-anchor">Tilbake</a>
+  </div>
 
-<?php if ($successMessage): ?>
+  <?php if ($successMessage): ?>
     <p style="color: green"><?= htmlspecialchars($successMessage) ?></p>
-<?php endif; ?>
+  <?php endif; ?>
 
-<?php foreach ($errors as $error): ?>
+  <?php foreach ($errors as $error): ?>
     <p style="color:red"><?= htmlspecialchars($error) ?></p>
-<?php endforeach; ?>
+  <?php endforeach; ?>
 
-<form method="POST">
+  <form method="POST">
     <label for="name">Navn på samling</label>
     <input id="name" name="name" placeholder="Navn på samling" required><br>
     <label for="description">Beskrivelse</label>
@@ -101,63 +107,65 @@ $pictures = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <label for="ended_at">Sluttdato</label>
     <input name="ended_at" id="ended_at" type="date" placeholder="Sluttdato"><br>
 
-    <h3>Velg malerier å legge til</h3>
+    <label>Velg malerier å legge til</label>
     <div class="painting-preview" id="paintingPreview">
-        <?php foreach ($pictures as $picture): ?>
-            <div class="painting-thumb" 
-                 data-painting-id="<?= htmlspecialchars($picture['painting_id']) ?>" 
-                 style="display: inline-block; margin: 10px; text-align: center; cursor: pointer;">
-                <?php if (!empty($picture['image_path'])): ?>
-                    <img src="../uploads/<?= htmlspecialchars($picture['image_path']) ?>" alt="Preview" style="width:100px;height:auto;display:block;">
-                <?php else: ?>
-                    <div style="width:100px;height:100px;background-color:#ccc;display:flex;align-items:center;justify-content:center;">
-                        No Image
-                    </div>
-                <?php endif; ?>
-                <span><?= htmlspecialchars($picture['painting_title'] ?? 'Untitled') ?></span>
+      <?php foreach ($pictures as $picture): ?>
+        <div class="painting-thumb" data-painting-id="<?= htmlspecialchars($picture['painting_id']) ?>"
+          style="display: inline-block; margin: 10px; text-align: center; cursor: pointer;">
+          <?php if (!empty($picture['image_path'])): ?>
+            <img src="../uploads/<?= htmlspecialchars($picture['image_path']) ?>" alt="Preview"
+              style="width:100px;height:auto;display:block;">
+          <?php else: ?>
+            <div
+              style="width:100px;height:100px;background-color:#ccc;display:flex;align-items:center;justify-content:center;">
+              No Image
             </div>
-        <?php endforeach; ?>
+          <?php endif; ?>
+          <span><?= htmlspecialchars($picture['painting_title'] ?? 'Untitled') ?></span>
+        </div>
+      <?php endforeach; ?>
     </div>
     <!-- Hidden container for selected painting ids -->
     <div id="selectedPaintings"></div>
     <button type="submit">Opprett samling</button>
-</form>
-<script>
+  </form>
+  <script>
     // Add highlight class on click and manage hidden inputs
     document.addEventListener('DOMContentLoaded', function () {
-        const preview = document.getElementById('paintingPreview');
-        const selectedPaintings = document.getElementById('selectedPaintings');
-        const selected = new Set();
+      const preview = document.getElementById('paintingPreview');
+      const selectedPaintings = document.getElementById('selectedPaintings');
+      const selected = new Set();
 
-        preview.querySelectorAll('.painting-thumb').forEach(function (thumb) {
-            thumb.addEventListener('click', function () {
-                const id = thumb.getAttribute('data-painting-id');
-                if (selected.has(id)) {
-                    selected.delete(id);
-                    thumb.classList.remove('highlight');
-                    // Remove hidden input
-                    const input = selectedPaintings.querySelector('input[value="' + id + '"]');
-                    if (input) input.remove();
-                } else {
-                    selected.add(id);
-                    thumb.classList.add('highlight');
-                    // Add hidden input
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = 'picture_ids[]';
-                    input.value = id;
-                    selectedPaintings.appendChild(input);
-                }
-            });
+      preview.querySelectorAll('.painting-thumb').forEach(function (thumb) {
+        thumb.addEventListener('click', function () {
+          const id = thumb.getAttribute('data-painting-id');
+          if (selected.has(id)) {
+            selected.delete(id);
+            thumb.classList.remove('highlight');
+            // Remove hidden input
+            const input = selectedPaintings.querySelector('input[value="' + id + '"]');
+            if (input) input.remove();
+          } else {
+            selected.add(id);
+            thumb.classList.add('highlight');
+            // Add hidden input
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'picture_ids[]';
+            input.value = id;
+            selectedPaintings.appendChild(input);
+          }
         });
+      });
     });
-</script>
-<style>
+  </script>
+  <style>
     .painting-thumb.highlight {
-        outline: 3px solid #007bff;
-        background: #e6f0ff;
-        border-radius: 6px;
+      outline: 3px solid #007bff;
+      background: #e6f0ff;
+      border-radius: 6px;
     }
-</style>
+  </style>
 </body>
+
 </html>

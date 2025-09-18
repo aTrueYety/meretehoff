@@ -120,10 +120,14 @@ $currentPaintings = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="/css/index.css">
     <link rel="stylesheet" href="/css/form.css">
 </head>
 <body>
-<h1>Rediger sammling</h1>
+<div class="form-head">
+  <h1>Rediger sammling</h1>
+  <a href="/index.php">Tilbake</a>
+</div>
 
 <?php if ($successMessage): ?>
   <p style="color: green"><?= htmlspecialchars($successMessage) ?></p>
@@ -143,7 +147,7 @@ $currentPaintings = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <label for="ended_at">Sluttdato</label>
   <input id="ended_at" name="ended_at" type="date" value="<?= htmlspecialchars($collection['finished_at']) ?>" placeholder="Sluttdato"><br>
 
-  <h3>Velg malerier</h3>
+  <label>Velg malerier</label>
   <div id="paintingPreview" style="display: flex; flex-wrap: wrap; gap: 10px;">
     <?php
       $currentPaintingIds = array_column($currentPaintings, 'painting_id');
