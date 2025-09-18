@@ -1,6 +1,6 @@
 <?php
 require_once 'load_env.php';
-loadEnv(__DIR__ . '/../.env');
+loadEnv(__DIR__ . '/../../.env');
 
 $host = $_ENV['DB_HOST'];
 $dbname = $_ENV['DB_NAME'];
