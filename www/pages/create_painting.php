@@ -106,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
 <div class="form-head">
   <h1>Opprett maleri</h1>
-  <a href="javascript:history.back()">Tilbake</a>
+        <a href="../index.php#collections-anchor">Tilbake</a>
 </div>
 
 <?php if ($successMessage): ?>

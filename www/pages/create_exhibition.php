@@ -105,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div>
     <div class="form-head">
       <h1>Opprett utstilling</h1>
-      <a href="javascript:history.back()">Tilbake</a>
+  <a href="../index.php#exhibitions-anchor">Tilbake</a>
     </div>
 
     <?php if ($successMessage): ?>
@@ -128,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       <label>Last opp bilder til utstillingen</label>
       <div id="fileInputs">
-        <input type="file" name="new_images[]" required><br>
+        <input type="file" name="new_images[]"><br>
       </div>
       <button type="button" onclick="addFileInput()">Legg til flere bilder</button><br>
 

@@ -139,7 +139,7 @@ $images_to_add = [];
   <div>
     <div class="form-head">
       <h1>Rediger utstilling</h1>
-      <a href="javascript:history.back()">Tilbake</a>
+  <a href="../index.php#exhibitions-anchor">Tilbake</a>
     </div>
 
     <?php if ($error): ?>

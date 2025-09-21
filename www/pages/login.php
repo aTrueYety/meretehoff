@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
   <div class="form-head">
     <h1>Login</h1>
-    <a href="javascript:history.back()">Tilbake</a>
+  <a href="../index.php">Tilbake</a>
   </div>
 
   <?php foreach ($errors as $error): ?>

@@ -146,7 +146,7 @@ $images = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <div>
     <div class="form-head">
       <h1>Rediger maleri</h1>
-      <a href="javascript:history.back()">Tilbake</a>
+  <a href="../index.php#collections-anchor">Tilbake</a>
     </div>
 
     <?php if ($successMessage): ?>
