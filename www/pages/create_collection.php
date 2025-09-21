@@ -85,7 +85,7 @@ $pictures = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <body>
   <div class="form-head">
     <h1>Opprett samling</h1>
-    <a href="../index.php#collections-anchor">Tilbake</a>
+  <a href="javascript:history.back()">Tilbake</a>
   </div>
 
   <?php if ($successMessage): ?>

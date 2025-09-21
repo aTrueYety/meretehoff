@@ -125,7 +125,7 @@ $currentPaintings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <body>
 <div class="form-head">
   <h1>Rediger sammling</h1>
-  <a href="../index.php">Tilbake</a>
+  <a href="javascript:history.back()">Tilbake</a>
 </div>
 
 <?php if ($successMessage): ?>
