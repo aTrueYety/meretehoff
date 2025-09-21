@@ -46,9 +46,9 @@ $images = $imageQuery->fetchAll(PDO::FETCH_ASSOC);
 <head>
   <meta charset="UTF-8">
   <title><?php echo htmlspecialchars($painting['title']); ?> - Merete Hoff</title>
-  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../img/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../img/favicon/favicon-16x16.png">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
   <link rel="stylesheet" href="../css/index.css">
   <link rel="stylesheet" href="../css/painting.css">
@@ -138,10 +138,17 @@ $images = $imageQuery->fetchAll(PDO::FETCH_ASSOC);
       <h1><?php echo htmlspecialchars($painting['title']); ?></h1>
       <p class="weak">
         <?php 
-          if (isset($painting['price']) && $painting['price'] !== null && $painting['price'] !== '' && $painting['price'] != 0) {
-            echo number_format($painting['price'], 0) . ',-';
-          } else {
-            echo 'Pris ikke satt';
+          if (!$painting['is_sold']) {
+            if (
+                isset($painting['price']) 
+                && $painting['price'] !== null 
+                && $painting['price'] !== '' 
+                && $painting['price'] != 0
+              ) {
+              echo number_format($painting['price'], 0) . ',-';
+            } else {
+              echo 'Pris ikke satt';
+            }
           }
         ?>
       </p>
@@ -153,14 +160,14 @@ $images = $imageQuery->fetchAll(PDO::FETCH_ASSOC);
       <?php if (!empty($_SESSION['username'])): ?>
         <button 
           class="admin-action netrual"
-          onclick="window.location.href='/pages/edit_painting.php?id=<?php echo $paintingId; ?>'"
+          onclick="window.location.href='./edit_painting.php?id=<?php echo $paintingId; ?>'"
         >
           <img src="../img/edit.svg" alt="Rediger bilde">
           <span>Rediger</span>
         </button>
         <button 
           class="admin-action negative"
-          onclick="window.location.href='/pages/delete_painting.php?id=<?php echo $paintingId; ?>'"
+          onclick="window.location.href='./delete_painting.php?id=<?php echo $paintingId; ?>'"
         >
           <img src="../img/delete.svg" alt="Slett bilde">
           <span>Slett</span>
