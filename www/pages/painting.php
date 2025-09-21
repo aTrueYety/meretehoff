@@ -136,7 +136,15 @@ $images = $imageQuery->fetchAll(PDO::FETCH_ASSOC);
   <div class="details">
     <div class="details-header">
       <h1><?php echo htmlspecialchars($painting['title']); ?></h1>
-      <p class="weak"><?php echo number_format($painting['price'], 0); ?>,-</p>
+      <p class="weak">
+        <?php 
+          if (isset($painting['price']) && $painting['price'] !== null && $painting['price'] !== '' && $painting['price'] != 0) {
+            echo number_format($painting['price'], 0) . ',-';
+          } else {
+            echo 'Pris ikke satt';
+          }
+        ?>
+      </p>
       <?php if ($painting['is_sold']): ?>
         <p class="weak">Solgt</p>
       <?php else: ?>

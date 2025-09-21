@@ -121,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <label for="title">Tittel</label>
     <input id="title" name="title" placeholder="Tittel" required><br>
     <label for="price">Pris</label>
-    <input id="price" name="price" type="number" step="0.01" placeholder="Pris" required><br>
+    <input id="price" name="price" type="number" step="0.01" placeholder="Pris"><br>
     <label for="description">Beskrivelse</label>
     <textarea id="description" name="description" placeholder="Beskrivelse"></textarea><br>
     <label for="size_v">Høyde (cm)</label>

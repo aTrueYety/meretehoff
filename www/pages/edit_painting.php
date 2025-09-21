@@ -162,7 +162,7 @@ $images = $stmt->fetchAll(PDO::FETCH_ASSOC);
       <input id="title" name="title" value="<?= htmlspecialchars($painting['title']) ?>" placeholder="Tittel"
         required><br>
       <label for="price">Pris</label>
-      <input id="price" name="price" type="number" step="0.01" value="<?= htmlspecialchars($painting['price']) ?>"
+      <input id="price" name="price" type="number" step="1" value="<?= htmlspecialchars($painting['price']) ?>"
         placeholder="Pris"><br>
       <label for="description">Beskrivelse</label>
       <textarea id="description" name="description"
