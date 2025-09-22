@@ -144,12 +144,12 @@ $exhibitions = array_values($exhibitions); // Re-index for foreach
       <div id="about-anchor"></div>
       <div style="align-self: flex-start;">
         <h1>Om Kunstneren</h1>
-        <p>Kunstneren har bakgrunn som arkitekt og leder, og har gjennom hele livet kombinert dette
+        <p>Merete Hoff har bakgrunn som arkitekt og leder, og har gjennom hele livet kombinert dette
         med en skaperglede innen kunst. Hun har studert skulptur, land art, performance art, croquis,
         foto og illustrasjon, og har deltatt i en rekke tverrfaglige prosjekter der kunst og arkitektur
         møtes.
         </p><p>
-        I 2014 fordype hun seg innen billedkunst for å utvikle sitt eget uttrykk. Atelieret fungerer som
+        I 2014 fordypet hun seg innen billedkunst for å utvikle sitt eget uttrykk. Atelieret fungerer som
         en arena for eksperimentering og refleksjon, der prosessen og opplevelsen av flyt er like
         viktig som det ferdige verket.
         </p><p>
@@ -160,7 +160,7 @@ $exhibitions = array_values($exhibitions); // Re-index for foreach
       </div>
       <div style="align-self: flex-end; text-align: right;">
         <h1>Om kunsten</h1>
-        <p>Kunstneren arbeider med abstrakt og non-figurativ akrylmaling på lerret; ofte i kvadratisk
+        <p>Merete Hoff arbeider med abstrakt og non-figurativ akrylmaling på lerret; ofte i kvadratisk
         format for å unngå assosiasjoner til portrett eller landskap. Inspirasjon hentes ofte fra
         naturens makro- og mikrostrukturer i biologi eller naturvitenskap. Den kan også formidler
         stemninger og følelser, eller ta utgangspunkt i filosofi eller et samfunnsaktuelle tema.
@@ -320,18 +320,18 @@ $exhibitions = array_values($exhibitions); // Re-index for foreach
         <img src="img/merete.jpeg" alt="Merete Hoff" class="profile-pic">
         <div class="contact-details">
           <H2>Merete Hoff</H2>
-          <button onclick="window.location.href='tel:+4799999999'">
+          <button onclick="window.location.href='tel:+4792613037'">
             <img src="img/phone.svg" alt="Telefon">
-            <p>+47 99999999</p>
+            <p>+47 92613037</p>
           </button>
-          <button onclick="window.location.href='mailto:post@gmail.com'">
+          <button onclick="window.location.href='mailto:mho.arktis@gmail.com'">
             <img src="img/mail.svg" alt="E-post">
-            <p>post@gmail.com</p>
+            <p>mho.arktis@gmail.com</p>
           </button>
           <button
-            onclick="window.location.href='https://www.google.com/maps/place/Aker+brygge,+Oslo/@59.9099508,10.7208394,16z/data=!3m1!4b1!4m6!3m5!1s0x46416e81bceae4f9:0xe68ffef57f364675!8m2!3d59.9099584!4d10.7258053!16s%2Fm%2F02qjqd1?entry=ttu&g_ep=EgoyMDI1MDYxMS4wIKXMDSoASAFQAw%3D%3D'">
-            <img src="img/address.svg" alt="Adresse">
-            <p>Eksempelveien 1, 1234 Oslo</p>
+            onclick="window.location.href='https://www.instagram.com/artby.hoff?igsh=MTZvMGFwMjBsOXI3dA=='">
+            <img src="img/instagram.svg" alt="Instagram">
+            <p>@artby.hoff</p>
           </button>
         </div>
       </div>
@@ -339,7 +339,7 @@ $exhibitions = array_values($exhibitions); // Re-index for foreach
   </div>
 
   <div class="footer">
-    <p>© 2023 Merete Hoff. Alle rettigheter reservert.</p>
+    <p>© 2025 Merete Hoff. Alle rettigheter reservert.</p>
     <?php if (!empty($_SESSION['username'])): ?>
       <span>
         <p>Logget inn som <?= htmlspecialchars($_SESSION['username']) ?> - </p>
