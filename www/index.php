@@ -93,7 +93,7 @@ $exhibitions = array_values($exhibitions); // Re-index for foreach
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="no">
 
 <head>
   <meta charset="UTF-8">

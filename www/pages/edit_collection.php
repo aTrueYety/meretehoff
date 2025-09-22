@@ -111,7 +111,7 @@ $stmt->execute(['collection_id' => $collectionId]);
 $currentPaintings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="no">
 <head>
     <meta charset="UTF-8">
     <title>Rediger sammling</title>
