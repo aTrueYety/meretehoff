@@ -3,6 +3,17 @@ require_once __DIR__ . '/../db/db.php';
 require_once __DIR__ . '/../db/load_env.php';
 loadEnv(__DIR__ . '/../../.env');
 
+function generateUuidV4() {
+  return sprintf(
+    '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+    mt_rand(0, 0xffff), mt_rand(0, 0xffff),
+    mt_rand(0, 0xffff),
+    mt_rand(0, 0x0fff) | 0x4000,
+    mt_rand(0, 0x3fff) | 0x8000,
+    mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+  );
+}
+
 $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $username = trim($_POST['username'] ?? '');
@@ -23,8 +34,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = "Invalid registration key.";
       } else {
         $hash = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $pdo->prepare("INSERT INTO user (username, password_hash) VALUES (:username, :hash)");
-        $stmt->execute(['username' => $username, 'hash' => $hash]);
+        $uuid = generateUuidV4();
+        $stmt = $pdo->prepare("INSERT INTO user (id, username, password_hash) VALUES (:id, :username, :hash)");
+        $stmt->execute(['id' => $uuid, 'username' => $username, 'hash' => $hash]);
         header("Location: login.php");
         exit;
       }
