@@ -296,6 +296,12 @@ a {
     align-items: center;
     gap: 1rem;
 
+    @media (max-width: 600px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
     & .title-container {
       display: flex;
       flex-direction: row;
