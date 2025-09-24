@@ -306,11 +306,15 @@ a {
       display: flex;
       flex-direction: row;
       gap: 1rem;
-
+      
       & .title {
+        max-width: 100%;
         font-size: 2rem;
         letter-spacing: 0.5rem;
         text-transform: uppercase;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
       }
     }
 
@@ -473,6 +477,13 @@ a {
       display: flex;
       flex-direction: column;
 
+      @media (max-width: 600px) {
+        & h2 {
+          text-align: center;
+        }
+        
+      }
+
       & button {
         width: auto;
         align-self: flex-start;
@@ -485,6 +496,15 @@ a {
         color: inherit;
         cursor: pointer;
         transition: 0.2s;
+        max-width: 100%;
+
+        & p {
+          text-align: left;
+          max-width: 100%;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+          hyphens: auto;
+        }
 
         &:hover {
           background-color: rgba(0, 0, 0, 0.2);
